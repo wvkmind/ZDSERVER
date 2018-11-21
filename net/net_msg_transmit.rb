@@ -44,7 +44,15 @@ module EventManage
 					cur_sync = NetBuffer::get_sync
 					if @synchronization_status_event[cur_sync[:name]]!=nil
 						@synchronization_status_event[cur_sync[:name]].each do |q,flag|
-							q.call cur_sync
+							Thread.new do
+								begin 
+									q.call cur_sync
+								rescue Exception => e  
+									Log.info cur_sync
+									Log.info e.message	
+									Log.info e.backtrace  
+								end
+							end
 						end
 					end
 				end
@@ -61,7 +69,15 @@ module EventManage
 					cur_sync = NetBuffer::get_need_wait
 					if @need_wait_and_normal_event[cur_sync[:name]] != nil
 						@need_wait_and_normal_event[cur_sync[:name]].each do |q,flag|
-							q.call cur_sync
+							Thread.new do
+								begin 
+									q.call cur_sync
+								rescue Exception => e  
+									Log.info cur_sync
+									Log.info e.message	
+									Log.info e.backtrace  
+								end
+							end
 						end
 					end
 				end
