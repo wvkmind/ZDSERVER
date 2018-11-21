@@ -56,4 +56,4 @@ module AutoLoad
 	end
 end
 
-AutoLoad::G.instance.init
+#AutoLoad::G.instance.init
