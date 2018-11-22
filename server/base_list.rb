@@ -16,7 +16,6 @@ def init(path)
 		update_dir path,need_reload_file
 		up_queue = need_reload_file.sort 
 		up_queue.each do |e|
-			puts e[0] 
 			require e[0] 
 		end
 end

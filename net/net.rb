@@ -91,7 +91,6 @@ module Net
 			@udp_recv_thread = Thread.new do
 				begin 
 					loop do
-						print "start recv"
 						tmp_ = @udp_socket.recvfrom(1024)
 						NetBuffer::push tmp_
 					end
