@@ -27,7 +27,7 @@ begin
 	Net::bind('127.0.0.1',6655)
 	start = Thread.new do
   		loop do
-    		sleep(0)
+    		sleep(6*10000)
   		end
 	end
 rescue Exception => e
