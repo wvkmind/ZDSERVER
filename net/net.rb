@@ -62,8 +62,8 @@ module Net
       		@udp_socket         = UDPSocket.new
       		@udp_socket_to_ip   = nil
       		@udp_socket_to_port = nil
-      		@udp_recv_thread    = nil
-      		super
+			@udp_recv_thread    = nil
+      		supe4r
 		end
 
 		def bind_with_ip_port(ip_string,port_number)
@@ -72,6 +72,7 @@ module Net
 			@udp_socket = UDPSocket.new
 			@udp_socket.bind(ip_string, port_number)
 			start_udp_recv_thread
+			start_udp_send_thread
 		end
 
 		def set_to_ip_port(ip_string,port_number)
@@ -80,12 +81,26 @@ module Net
 		end
 
 		def send_msg_(a)
-			@udp_socket.send(a.to_s, 0, @udp_socket_to_ip , @udp_socket_to_port) unless @udp_socket_to_ip == nil
+			unless @udp_socket_to_ip == nil
+				NetBuffer::push_udp_send_info_to_queue_end({
+					info:a.to_s,
+					ip:@udp_socket_to_ip,
+					port:@udp_socket_to_port
+				})
+			end
 		end
 		def send_with_ip_port_(a,ip,port)
-			@udp_socket.send(a.to_s, 0, ip , port)
+			NetBuffer::push_udp_send_info_to_queue_end({
+				info:a.to_s,
+				ip:ip,
+				port:port
+			})
 		end
 
+		def send()
+			send_info = NetBuffer::pop_send
+			@udp_socket.send(send_info[:info], 0, send_info[:ip] , send_info[:port])
+		end
 		def start_udp_recv_thread
 			Thread.kill(@udp_recv_thread) unless @udp_recv_thread == nil
 			@udp_recv_thread = Thread.new do
@@ -106,6 +121,10 @@ module Net
 			Thread.kill(@udp_recv_thread) unless @udp_recv_thread == nil 
 			@udp_recv_thread = nil
 		end
-
+		def start_udp_send_thread
+			Thread.new do
+				send()
+			end
+		end
 	end
 end
