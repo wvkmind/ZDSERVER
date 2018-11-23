@@ -8,6 +8,12 @@ module EventManage
 	
 	#注册 
 	def self.register_event(proc,event)
+		if event.class != Hash
+			event = {
+				name: event,
+				type: :normal
+			}
+		end
 		EventManage::Manage.instance.register_event proc,event
 	end
 	#移除
@@ -44,15 +50,7 @@ module EventManage
 					cur_sync = NetBuffer::get_sync
 					if @synchronization_status_event[cur_sync[:name]]!=nil
 						@synchronization_status_event[cur_sync[:name]].each do |q,flag|
-							Thread.new do
-								begin 
-									q.call cur_sync
-								rescue Exception => e  
-									Log.info cur_sync
-									Log.info e.message	
-									Log.info e.backtrace  
-								end
-							end
+							q.call cur_sync
 						end
 					end
 				end
@@ -69,15 +67,7 @@ module EventManage
 					cur_sync = NetBuffer::get_need_wait
 					if @need_wait_and_normal_event[cur_sync[:name]] != nil
 						@need_wait_and_normal_event[cur_sync[:name]].each do |q,flag|
-							Thread.new do
-								begin 
-									q.call cur_sync
-								rescue Exception => e  
-									Log.info cur_sync
-									Log.info e.message	
-									Log.info e.backtrace  
-								end
-							end
+							q.call cur_sync
 						end
 					end
 				end
