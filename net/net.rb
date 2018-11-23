@@ -48,7 +48,7 @@ module Net
 		Net::Connector.instance.send_with_ip_port_(a,ip,port)
 	end
 
-	################################################################################################
+	###############################################################################################
 
 	def self.send_with_recv(a,r)
 		Net::Connector.instance.send_with_ip_port_(a,r[:from_info][:ip],r[:from_info][:port])
