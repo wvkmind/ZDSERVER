@@ -44,6 +44,7 @@ module EventManage
 			end
 		end
 
+		#同步的东西要保证按照接收的时间来处理
 		def sync_loop
 			begin 
 				loop do 
@@ -61,13 +62,16 @@ module EventManage
 			end
 		end
 
+		#正常的信息处理的时候直接放到线程池
 		def normal_loop
 			begin
 				loop do 
 					cur_sync = NetBuffer::get_need_wait
 					if @need_wait_and_normal_event[cur_sync[:name]] != nil
 						@need_wait_and_normal_event[cur_sync[:name]].each do |q,flag|
-							q.call cur_sync
+							Thread.new do
+								q.call cur_sync
+							end
 						end
 					end
 				end
