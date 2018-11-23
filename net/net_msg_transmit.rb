@@ -69,6 +69,7 @@ module EventManage
 					cur_sync = NetBuffer::get_need_wait
 					if @need_wait_and_normal_event[cur_sync[:name]] != nil
 						@need_wait_and_normal_event[cur_sync[:name]].each do |q,flag|
+							#[TODO]线程池
 							Thread.new do
 								q.call cur_sync
 							end
