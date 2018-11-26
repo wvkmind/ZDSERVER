@@ -63,7 +63,7 @@ module Net
       		@udp_socket_to_ip   = nil
       		@udp_socket_to_port = nil
 			@udp_recv_thread    = nil
-      		supe4r
+      		super
 		end
 
 		def bind_with_ip_port(ip_string,port_number)
