@@ -20,6 +20,7 @@ def init(path)
     end
 end
 
+init('./log')
 init('./database')
 init('./net')
 init('./config')

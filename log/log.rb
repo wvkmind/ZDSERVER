@@ -21,12 +21,11 @@ module Log
 				Logger.new('./log/all.log').info info
 			end
 		end
-		@@thread.join
 	end
 
 	def self.end
 		unless  @@thread.nil?
-				Thread.kill @@thread
+			Thread.kill @@thread
 		end
 	end
 

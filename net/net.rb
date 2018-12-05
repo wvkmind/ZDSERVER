@@ -1,4 +1,3 @@
-
 require 'socket'
 module Net
 	class Connector
@@ -59,8 +58,8 @@ module Net
 			end
 		end
 
-		def send(info,ip,port)
-			@send_thread << {info: info,ip: ip,port: port}
+		def send(info,r)
+			@send_queue << {info: Packer.pack(info),ip: r[:ip],port: r[:port]}
 		end
 
 		def restart_event_thread
@@ -69,11 +68,8 @@ module Net
 				begin 
 					loop do
 						source = @recive_queue.pop
-						data = Packer.unpack(source[0])
-						data[:ip] = source[1][2]
-						data[:port] = source[1][1]
-						fire(data)
-						puts data
+						fire(source)
+						
 					end
 				rescue Exception => e  
 					Log.info e.message	
@@ -89,7 +85,11 @@ module Net
 				begin 
 					loop do
 						tmp_ = @socket.recvfrom(NetConfig::MTU)
-						@recive_queue << tmp_
+						data = Packer.unpack(tmp_[0])
+						data[:ip] = tmp_[1][2]
+						data[:port] = tmp_[1][1]
+						@recive_queue << data
+						
 					end
 				rescue Exception => e  
 					Log.info e.message	
@@ -105,7 +105,7 @@ module Net
 				begin 
 					loop do
 						send_info = @send_queue.pop
-						@udp_socket.send(send_info[:info], 0, send_info[:ip], send_info[:port])
+						@socket.send(send_info[:info], 0, send_info[:ip], send_info[:port])
 					end
 				rescue Exception => e  
 					Log.info e.message	

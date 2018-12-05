@@ -4,6 +4,6 @@ module Packer
         source.to_msgpack
     end
     def self.unpack(source)
-        MessagePack.unpack(msg)
+        MessagePack.unpack(source)
     end
 end
