@@ -16,10 +16,21 @@ module Net
 		def self.get_nodes_with_type(node_type)
 			@@node_set[node_type]
 		end
-
+		def port
+			@port
+		end
+		def ip
+			@ip
+		end
 		def initialize(node_type,ip_string,port_number)
 			@socket = UDPSocket.new
 			@socket.bind(ip_string, port_number)
+			@ip = ip_string
+			if(port_number == 0 )
+				@port = @socket.local_address.ip_port
+			else
+				@port = port_number
+			end
 			@recive_queue = Queue.new
 			@send_queue = Queue.new
 			@recive_thread = nil
@@ -42,9 +53,9 @@ module Net
 			@events[event_name] = nil
 		end
 
-		def fire(event_name,info)
-			@events[event_name].each do |p|
-				p.call(info)
+		def fire(data)
+			@events[data['name']].each do |p|
+				p.call(data)
 			end
 		end
 
@@ -58,8 +69,11 @@ module Net
 				begin 
 					loop do
 						source = @recive_queue.pop
-						data = Packer.unpack(source)
-						fire(data[:name],data[:info])
+						data = Packer.unpack(source[0])
+						data[:ip] = source[1][2]
+						data[:port] = source[1][1]
+						fire(data)
+						puts data
 					end
 				rescue Exception => e  
 					Log.info e.message	
