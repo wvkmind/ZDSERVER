@@ -3,4 +3,5 @@ module NetConfig
     PORT = 6666
     NODE_NUM = 6
     MTU = 548
+    PATCH = 50
 end

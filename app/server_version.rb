@@ -1,7 +1,4 @@
-# EventManage::register_event( -> r do
-    
+Net::Connector.registergate('version',-> r,node do
+    node.send({Key2:ServerConfig::VERSION},r)
+end)
 
-#     Net::send_with_recv("#{r[:name]}:#{DataBase._redis_.get("my_id")}\0",r)
-
-
-# end,:get_my_id)

@@ -3,7 +3,17 @@ module Net
 	class Connector
 		
 		@@node_set = {}
-		
+		@@events = {}
+
+		ServerConfig::NODE_TYPE.each do |key,value|
+			Net::Connector.define_singleton_method("register#{key.to_s}") do |event_name,backcall|
+				Net::Connector.register(value,event_name,backcall)
+			end
+			Net::Connector.define_singleton_method("unregister#{key.to_s}") do |event_name|
+				Net::Connector.unregister(value,event_name)
+			end
+		end	
+
 		def self.insert_node(node)
 			if(@@node_set.has_key?(node.node_type))
 				@@node_set[node.node_type] << node
@@ -36,25 +46,26 @@ module Net
 			@send_thread = nil
 			@event_thread = nil
 			@node_type = node_type
-			@events = {}
+			
 			
 			restart_recive_thread
 			restart_send_thread
 			restart_event_thread
 		end
 
-		def register(event_name,backcall)
-			@events[event_name] = [] if @events[event_name].nil?
-			@events[event_name] << backcall
+		def self.register(node_type,event_name,backcall)
+			@@events[node_type] = {} if @@events[node_type].nil?
+			@@events[node_type][event_name] = [] if @@events[node_type][event_name].nil?
+			@@events[node_type][event_name] << backcall
 		end
 
-		def unregister(event_name)
-			@events[event_name] = nil
+		def self.unregister(node_type,event_name)
+			@@events[node_type][event_name] = nil unless @@events[node_type].nil?
 		end
 
 		def fire(data)
-			@events[data['name']].each do |p|
-				p.call(data)
+			@@events[@node_type][data['name']].each do |p|
+				p.call(data,self)
 			end
 		end
 
