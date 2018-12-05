@@ -24,25 +24,50 @@ module Net
 			@send_queue = Queue.new
 			@recive_thread = nil
 			@send_thread = nil
+			@event_thread = nil
 			@node_type = node_type
 			@events = {}
 			
 			restart_recive_thread
 			restart_send_thread
+			restart_event_thread
 		end
 
 		def register(event_name,backcall)
-
+			@events[event_name] = [] if @events[event_name].nil?
+			@events[event_name] << backcall
 		end
 
 		def unregister(event_name)
+			@events[event_name] = nil
+		end
 
+		def fire(event_name,info)
+			@events[event_name].each do |p|
+				p.call(info)
+			end
 		end
 
 		def send(info,ip,port)
 			@send_thread << {info: info,ip: ip,port: port}
 		end
 
+		def restart_event_thread
+			Thread.kill(@event_thread) unless @event_thread == nil
+			@event_thread = Thread.new do
+				begin 
+					loop do
+						source = @recive_queue.pop
+						data = Packer.unpack(source)
+						fire(data[:name],data[:info])
+					end
+				rescue Exception => e  
+					Log.info e.message	
+					Log.info e.backtrace
+					retry
+				end
+			end
+		end
 
 		def restart_recive_thread
 			Thread.kill(@recive_thread) unless @recive_thread == nil
@@ -81,6 +106,8 @@ module Net
 			@recive_thread = nil
 			Thread.kill(@send_thread) unless @send_thread == nil 
 			@send_thread = nil
+			Thread.kill(@event_thread) unless @event_thread == nil 
+			@event_thread = nil
 		end
 
 	end

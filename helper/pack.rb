@@ -1,9 +1,9 @@
 require 'msgpack'
 module Packer
-    def pack(source)
+    def self.pack(source)
         source.to_msgpack
     end
-    def unpack(source)
+    def self.unpack(source)
         MessagePack.unpack(msg)
     end
 end
