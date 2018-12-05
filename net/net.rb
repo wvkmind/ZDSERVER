@@ -2,16 +2,41 @@
 require 'socket'
 module Net
 	class Connector
+		
+		@@node_set = {}
+		
+		def self.insert_node(node)
+			if(@@node_set.has_key?(node.node_type))
+				@@node_set[node.node_type] << node
+			else
+				@@node_set[node.node_type] = [node]
+			end
+		end
 
-		def initialize(ip_string,port_number)
+		def self.get_nodes_with_type(node_type)
+			@@node_set[node_type]
+		end
+
+		def initialize(node_type,ip_string,port_number)
 			@socket = UDPSocket.new
 			@socket.bind(ip_string, port_number)
 			@recive_queue = Queue.new
 			@send_queue = Queue.new
 			@recive_thread = nil
 			@send_thread = nil
+			@node_type = node_type
+			@events = {}
+			
 			restart_recive_thread
 			restart_send_thread
+		end
+
+		def register(event_name,backcall)
+
+		end
+
+		def unregister(event_name)
+
 		end
 
 		def send(info,ip,port)
