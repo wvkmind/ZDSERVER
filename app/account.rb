@@ -19,3 +19,15 @@ Net::Connector.registergate('register',-> params,node do
         node.send({error:e.message},params)
     end
 end)
+
+Net::Connector.registergate('login',-> params,node do
+    begin
+        session = AccountHelper::login params['account'], params['password']
+        session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
+        node.send(session.to_h,params)
+    rescue Exception => e
+        puts e.message
+        puts e.backtrace.join("\n")
+        node.send({error:e.message},params)
+    end
+end)

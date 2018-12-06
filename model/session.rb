@@ -1,4 +1,4 @@
-class Session 
+class Session < BaseModel
     def not_null
 		[:account]
 	end
@@ -10,7 +10,7 @@ class Session
         session = Session.find_by(:account, account)[0]
         if session.nil?
             session = Session.create account: account, token:token
-        elsif session.token.blank?
+        elsif session[:token].nil?
             session[:token] = token
             session.save
         end

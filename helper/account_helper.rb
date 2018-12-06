@@ -1,11 +1,11 @@
 module AccountHelper
     def self.login(account, password)
-        raise Exception.new('Account or password not provied.') if account.blank? or password.blank?
+        raise Exception.new('Account or password not provied.') if account.nil? or password.nil?
         user = User.find_by(:account, account)[0]
         raise Exception.new('Account doesnot exists.') if user.nil?
         raise Exception.new('Account deleted.') if user.deleted?
-        hashed_password = hash_password password, user.salt
-        if bytes_equal? hashed_password.bytes, user.hashed_password.bytes
+        hashed_password = hash_password password, user[:salt]
+        if bytes_equal? hashed_password.bytes, user[:hashed_password].bytes
           token = SecureRandom.uuid
           Session.update_session(account, token)
         else

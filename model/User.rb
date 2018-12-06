@@ -13,4 +13,8 @@ class User < BaseModel
 			account: self[:account]
 		}
 	end
+
+	def deleted?
+        self[:status]!=0
+    end
 end
