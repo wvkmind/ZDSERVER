@@ -1,23 +1,28 @@
 module NodeDispatchStrategy
     module NormalPatch
-        @nodes = []
         def insert_available_node(user_id)
             available_node = nil
+            @nodes = [] if @nodes.nil?
             @nodes.each do |node|
+                puts node.node_users.include? user_id.to_s
+                available_node = node if node.node_users.include? user_id.to_s
+            end
+            @nodes.each do |node|
+                
                 if node.available(user_id)
-                    savailable_node = node
+                    available_node = node
                     break
                 end
             end
             if(available_node==nil)
-                savailable_node = create_node
+                available_node = create_node
             end
-            savailable_node
+            available_node
         end
         def create_node
             if @nodes.length < NetConfig::PATCH_LIMIT
                 node = Node.create(@nodes.length)
-                @nodes << Node.create(@nodes.length)
+                @nodes << node
                 node
             else
                 nil
