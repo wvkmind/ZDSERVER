@@ -23,6 +23,7 @@ end
 init('./config')
 init('./log')
 init('./database')
+init('./model')
 init('./net')
 init('./helper')
 init('./app')
