@@ -1,3 +1,4 @@
+#[TODO] key value 打包然后根据id存入redis ，根据id能取到
 class BaseModel
     
     def initialize
@@ -6,10 +7,6 @@ class BaseModel
 
     def set_attributes(attributes)
         @attributes = attributes
-    end
-
-    def
-         
     end
 
     def save_reids
