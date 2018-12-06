@@ -38,7 +38,7 @@ class BaseModel
 
     def save_reids
         self.not_null.each do |key|
-            raise "#{self.class} #{key} cannot be null." if self[key].nil?
+            raise Exception.new  "#{self.class} #{key} cannot be null." if self[key].nil?
         end
         
         self[:id] = DataBase._redis_.incr("#{self.class}_maxid")  if self[:id].nil?
@@ -46,7 +46,7 @@ class BaseModel
         keys = []
         begin
             self.uniq_vlaue.each do |key|
-                raise "#{self.class} #{key} have #{self[key].to_s} " unless DataBase._redis_.setnx("#{self.class}_uniq_#{key}_#{self[key].to_s}",self[:id]) || DataBase._redis_.get("#{self.class}_uniq_#{key}_#{self[key].to_s}")==self[:id]
+                raise Exception.new "#{self.class} #{key} have #{self[key].to_s} " unless DataBase._redis_.setnx("#{self.class}_uniq_#{key}_#{self[key].to_s}",self[:id]) || DataBase._redis_.get("#{self.class}_uniq_#{key}_#{self[key].to_s}")==self[:id]
                 keys << "#{self.class}_uniq_#{key}_#{self[key].to_s}"
             end
             self.uniq_vlaues.each do |keys|
@@ -54,15 +54,15 @@ class BaseModel
                 keys.each do |key|
                     value = value + self[key].to_s
                 end
-                raise "#{self.class} #{keys.join(':')} have #{value} " unless DataBase._redis_.setnx("#{self.class}_uniqs_#{keys.join(':')}_#{value}",self[:id]) || DataBase._redis_.get("#{self.class}_uniqs_#{keys.join(':')}_#{value}")==self[:id]
+                raise Exception.new "#{value} " unless DataBase._redis_.setnx("#{self.class}_uniqs_#{keys.join(':')}_#{value}",self[:id]) || DataBase._redis_.get("#{self.class}_uniqs_#{keys.join(':')}_#{value}")==self[:id]
                 keys << "#{self.class}_uniqs_#{keys.join(':')}_#{value}"
             end
             @attributes.each do |key,value|
                 DataBase._redis_.set("#{self.class}_#{self[:id]}_#{key}",Marshal.dump([key,value]))
             end
-        rescue => exception
+        rescue Exception => e
             DataBase._redis_.del(keys) if keys.length>0
-            throw exception
+            raise e
         end
         
     end
@@ -95,12 +95,23 @@ class BaseModel
         end
     end
 
-    def self.all
-        
+    def self.find_by(key,p)
+        ret = []
+        DataBase._redis_.keys("#{self}_*_#{key}").each do |r|
+            a = Marshal.load(DataBase._redis_.get(r))
+            if(p.class == Proc&&p.call(a[1]))||p == a[1]
+                ret << find_by_id(r[(self.to_s.length+1)..(-(key.length+2))]) 
+            end
+        end
+        ret
     end
 
     def to_s
         "Model:#{self.class}:#{self.object_id}:#{@attributes}"
+    end
+
+    def to_h
+        @attributes
     end
 
 end

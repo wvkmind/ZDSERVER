@@ -28,12 +28,8 @@ CONSOLE = Thread.new do
 			ret = eval input
 			puts ret if ret!=nil
 		rescue => exception
-			if exception.message.index("undefined local variable or method ")
-				puts "没有找到命令\"#{input}\""
-			else
-				puts exception.message
-				puts exception.backtrace.join("\n")
-			end
+			puts exception.message
+			puts exception.backtrace.join("\n")
 		rescue SyntaxError => e
 			puts e
 		end

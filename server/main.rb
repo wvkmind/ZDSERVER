@@ -1,3 +1,4 @@
+require "base64"
 require "./autoload/auto_load"
 
 module Main
