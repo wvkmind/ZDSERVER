@@ -5,5 +5,6 @@ module NetConfig
     REDIS_PORT = 6666
     NODE_NUM = 6
     MTU = 548
-    PATCH = 50
+    PATCH_LIMIT = 5
+    NODE_LIMIT = 50
 end

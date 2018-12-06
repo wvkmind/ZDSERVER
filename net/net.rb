@@ -90,6 +90,20 @@ module Net
 			end
 		end
 
+		def check_token(token)
+            if token.nil?
+                return nil
+            end
+            token = Base64.decode64 token
+            account, id = token.split(':')
+            session = Session.find_by(:account,account).find_by(:token,id)[0]
+            unless session.nil?
+                return User.find_by(:account,account)[0][:id]
+            else
+                nil
+            end
+		end
+
 		def restart_recive_thread
 			Thread.kill(@recive_thread) unless @recive_thread == nil
 			@recive_thread = Thread.new do
@@ -99,8 +113,12 @@ module Net
 						data = Packer.unpack(tmp_[0])
 						data[:ip] = tmp_[1][2]
 						data[:port] = tmp_[1][1]
-						@recive_queue << data
-						
+						if @node_type == ServerConfig::NODE_TYPE[:logic]
+							data[:user_id] = check_token(data['token'])
+							@recive_queue << data if data[:user_id] != nil
+						else
+							@recive_queue << data
+						end	
 					end
 				rescue Exception => e  
 					Log.info e.message	

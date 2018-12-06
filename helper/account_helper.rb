@@ -7,7 +7,7 @@ module AccountHelper
         hashed_password = hash_password password, user[:salt]
         if bytes_equal? hashed_password.bytes, user[:hashed_password].bytes
           token = SecureRandom.uuid
-          Session.update_session(account, token)
+          {session: Session.update_session(account, token),user: user}
         else
           raise Exception.new('Wrong password.')
         end

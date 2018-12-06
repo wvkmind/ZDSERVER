@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-class NodeDispatchPort
-    def gate
-        @gate
-    end
-    def initialize
-        @gate = Net::Connector.new(ServerConfig::NODE_TYPE[:gate],NetConfig::IP,NetConfig::PORT)
-    end
+require './net/node_dispatch_strategy'
+class NodeDispatchPort < Net::Connector
+    include NodeDispatchStrategy::NormalPatch
 end

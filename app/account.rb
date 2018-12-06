@@ -1,4 +1,4 @@
-Net::Connector.registergate('register',-> params,node do
+Net::Connector.registergate('register',-> params,gete do
     begin
         user = nil
         if(params['id'].nil?)
@@ -14,20 +14,28 @@ Net::Connector.registergate('register',-> params,node do
         end
         user[:status]=params['status']
         user.save
-        node.send(user.to_h,params)
+        gete.send(user.to_h,params)
     rescue Exception => e
-        node.send({error:e.message},params)
+        gete.send({error:e.message},params)
     end
 end)
 
-Net::Connector.registergate('login',-> params,node do
+Net::Connector.registergate('login',-> params,gete do
     begin
-        session = AccountHelper::login params['account'], params['password']
-        session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
-        node.send(session.to_h,params)
+        ret = AccountHelper::login params['account'], params['password']
+        session = ret[:session]
+        user = ret[:user]
+        node = gete.insert_available_node(user[:id])
+        if node == nil
+            session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
+            session[:ip] = node.ip
+            session[:port] = node.port
+            node.flush_heartbeat(user[:id])
+            gete.send(session.to_h,params)
+        else
+            raise Exception.new('Server is full.')
+        end
     rescue Exception => e
-        puts e.message
-        puts e.backtrace.join("\n")
-        node.send({error:e.message},params)
+        gete.send({error:e.message},params)
     end
 end)
