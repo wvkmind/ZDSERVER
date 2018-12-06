@@ -1,4 +1,4 @@
-#[TODO] key value 打包然后根据id存入redis ，根据id能取到
+
 class BaseModel
     
     def initialize
@@ -57,8 +57,9 @@ class BaseModel
                 raise "#{self.class} #{keys.join(':')} have #{value} " unless DataBase._redis_.setnx("#{self.class}_uniqs_#{keys.join(':')}_#{value}",self[:id]) || DataBase._redis_.get("#{self.class}_uniqs_#{keys.join(':')}_#{value}")==self[:id]
                 keys << "#{self.class}_uniqs_#{keys.join(':')}_#{value}"
             end
-            DataBase._redis_.set("#{self.class}_#{self[:id]}",Marshal.dump(@attributes))
-            keys << "#{self.class}_#{self[:id]}"
+            @attributes.each do |key,value|
+                DataBase._redis_.set("#{self.class}_#{self[:id]}_#{key}",Marshal.dump([key,value]))
+            end
         rescue => exception
             DataBase._redis_.del(keys) if keys.length>0
             throw exception
@@ -67,8 +68,13 @@ class BaseModel
     end
 
     def get_reids(id)
-        if DataBase._redis_.exists("#{self.class}_#{id}")
-            set_attributes(Marshal.load(DataBase._redis_.get("#{self.class}_#{id}")))
+        if DataBase._redis_.exists("#{self.class}_#{id}_id")
+            new_attributes = {}
+            DataBase._redis_.keys("#{self.class}_#{id}_*").each do |key|
+                a = Marshal.load(DataBase._redis_.get(key))
+                new_attributes[a[0]]=a[1]
+            end
+            set_attributes(new_attributes)
         else
             return nil
         end
@@ -87,6 +93,10 @@ class BaseModel
         else
             nil
         end
+    end
+
+    def self.all
+        
     end
 
     def to_s

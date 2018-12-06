@@ -31,10 +31,11 @@ CONSOLE = Thread.new do
 			if exception.message.index("undefined local variable or method ")
 				puts "没有找到命令\"#{input}\""
 			else
-				puts exception
+				puts exception.message
+				puts exception.backtrace.join("\n")
 			end
 		rescue SyntaxError => e
-			puts e.message
+			puts e
 		end
 	end
 end
