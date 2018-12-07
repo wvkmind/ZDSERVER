@@ -46,8 +46,7 @@ module Net
 			@send_thread = nil
 			@event_thread = nil
 			@node_type = node_type
-			
-			
+			Net::Connector.insert_node(self)
 			restart_recive_thread
 			restart_send_thread
 			restart_event_thread
