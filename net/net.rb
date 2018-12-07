@@ -1,130 +1,157 @@
-#low floor net work 
-#sever and client use it 
-#wvkmind
 require 'socket'
-require 'singleton'
-require './net/net_buffer'
-require './log/log'
-udp_recv_thread_init = false
 module Net
-	
-	#client use 
-	#1.Net::connect_sever
-	#2.EventManage::register_event
-	#3.Net::send_event_msg or Net::send_sync_msg
-	#send info need have {:name=>XXXXX,:info=>YYYYY}
-
-	#server use 
-	#1.Net::bind
-	#2.EventManage::register_event
-	#3.Net::send_normal_event_with_recv or Net::send_sync_with_recv
-	#send info need have {:name=>XXXXX,:info=>YYYYY},from_info
-
-	def self.connect_sever(ip,port)
-		Net::Connector.instance.set_to_ip_port(ip,port)
-		Net::Connector.instance.start_udp_recv_thread
-	end
-	def self.send_event_msg(a)
-		Net::Connector.instance.send_msg_({:name=>a[:name],:type=>:normal,:info=>a[:info]})
-	end
-
-	def self.send_sync_msg(a)
-		Net::Connector.instance.send_msg_({:name=>a[:name],:type=>:sync,:info=>a[:info]})
-	end
-	###############################################################################################
-	def self.bind(ip,port)
-		Net::Connector.instance.bind_with_ip_port(ip,port)
-	end
-
-	def self.send_normal_event_with_recv(a,r)
-		Net::send_with_recv({:name=>a[:name],:type=>:normal,:info=>a[:info]},r)
-	end
-
-	def self.send_sync_with_recv(a,r)
-		Net::send_with_recv({:name=>a[:name],:type=>:sync,:info=>a[:info]},r)
-	end
-
-	def self.send_with_ip_port(a,ip,port)
-		Net::Connector.instance.send_with_ip_port_(a,ip,port)
-	end
-
-	###############################################################################################
-
-	def self.send_with_recv(a,r)
-		Net::Connector.instance.send_with_ip_port_(a,r[:from_info][:ip],r[:from_info][:port])
-	end	
-
 	class Connector
-		include Singleton
-		public
+		
+		@@node_set = {}
+		@@events = {}
 
-		def initialize
-      		@udp_socket         = UDPSocket.new
-      		@udp_socket_to_ip   = nil
-      		@udp_socket_to_port = nil
-			@udp_recv_thread    = nil
-      		super
-		end
+		ServerConfig::NODE_TYPE.each do |key,value|
+			Net::Connector.define_singleton_method("register#{key.to_s}") do |event_name,backcall|
+				Net::Connector.register(value,event_name,backcall)
+			end
+			Net::Connector.define_singleton_method("unregister#{key.to_s}") do |event_name|
+				Net::Connector.unregister(value,event_name)
+			end
+		end	
 
-		def bind_with_ip_port(ip_string,port_number)
-			stop_udp_recv_thread
-			@udp_socket.close
-			@udp_socket = UDPSocket.new
-			@udp_socket.bind(ip_string, port_number)
-			start_udp_recv_thread
-			start_udp_send_thread
-		end
-
-		def set_to_ip_port(ip_string,port_number)
-			@udp_socket_to_ip   = ip_string
-			@udp_socket_to_port = port_number
-		end
-
-		def send_msg_(a)
-			unless @udp_socket_to_ip == nil
-				NetBuffer::push_udp_send_info_to_queue_end({
-					info:a.to_s,
-					ip:@udp_socket_to_ip,
-					port:@udp_socket_to_port
-				})
+		def self.insert_node(node)
+			if(@@node_set.has_key?(node.node_type))
+				@@node_set[node.node_type] << node
+			else
+				@@node_set[node.node_type] = [node]
 			end
 		end
-		def send_with_ip_port_(a,ip,port)
-			NetBuffer::push_udp_send_info_to_queue_end({
-				info:a.to_s,
-				ip:ip,
-				port:port
-			})
+
+		def self.get_nodes_with_type(node_type)
+			@@node_set[node_type]
+		end
+		def port
+			@port
+		end
+		def ip
+			@ip
+		end
+		def initialize(node_type,ip_string,port_number)
+			@socket = UDPSocket.new
+			@socket.bind(ip_string, port_number)
+			@ip = ip_string
+			if(port_number == 0 )
+				@port = @socket.local_address.ip_port
+			else
+				@port = port_number
+			end
+			@recive_queue = Queue.new
+			@send_queue = Queue.new
+			@recive_thread = nil
+			@send_thread = nil
+			@event_thread = nil
+			@node_type = node_type
+			
+			
+			restart_recive_thread
+			restart_send_thread
+			restart_event_thread
 		end
 
-		def send()
-			send_info = NetBuffer::pop_send
-			@udp_socket.send(send_info[:info], 0, send_info[:ip] , send_info[:port])
+		def self.register(node_type,event_name,backcall)
+			@@events[node_type] = {} if @@events[node_type].nil?
+			@@events[node_type][event_name] = [] if @@events[node_type][event_name].nil?
+			@@events[node_type][event_name] << backcall
 		end
-		def start_udp_recv_thread
-			Thread.kill(@udp_recv_thread) unless @udp_recv_thread == nil
-			@udp_recv_thread = Thread.new do
+
+		def self.unregister(node_type,event_name)
+			@@events[node_type][event_name] = nil unless @@events[node_type].nil?
+		end
+
+		def fire(data)
+			@@events[@node_type][data['name']].each do |p|
+				p.call(data,self)
+			end
+		end
+
+		def send(info,r)
+			@send_queue << {info: Packer.pack(info),ip: r[:ip],port: r[:port]}
+		end
+
+		def restart_event_thread
+			Thread.kill(@event_thread) unless @event_thread == nil
+			@event_thread = Thread.new do
 				begin 
 					loop do
-						tmp_ = @udp_socket.recvfrom(1024)
-						NetBuffer::push tmp_
+						source = @recive_queue.pop
+						fire(source)
+						
 					end
 				rescue Exception => e  
 					Log.info e.message	
 					Log.info e.backtrace
-					retry  
+					retry
 				end
 			end
 		end
 
-		def stop_udp_recv_thread
-			Thread.kill(@udp_recv_thread) unless @udp_recv_thread == nil 
-			@udp_recv_thread = nil
+		def check_token(token)
+            if token.nil?
+                return nil
+            end
+            token = Base64.decode64 token
+            account, id = token.split(':')
+            session = Session.find_by(:account,account).find_by(:token,id)[0]
+            unless session.nil?
+                return User.find_by(:account,account)[0][:id]
+            else
+                nil
+            end
 		end
-		def start_udp_send_thread
-			Thread.new do
-				send()
+
+		def restart_recive_thread
+			Thread.kill(@recive_thread) unless @recive_thread == nil
+			@recive_thread = Thread.new do
+				begin 
+					loop do
+						tmp_ = @socket.recvfrom(NetConfig::MTU)
+						data = Packer.unpack(tmp_[0])
+						data[:ip] = tmp_[1][2]
+						data[:port] = tmp_[1][1]
+						if @node_type == ServerConfig::NODE_TYPE[:logic]
+							data[:user_id] = check_token(data['token'])
+							@recive_queue << data if data[:user_id] != nil
+						else
+							@recive_queue << data
+						end	
+					end
+				rescue Exception => e  
+					Log.info e.message	
+					Log.info e.backtrace
+					retry
+				end
 			end
 		end
+
+		def restart_send_thread
+			Thread.kill(@send_thread) unless @send_thread == nil
+			@send_thread = Thread.new do
+				begin 
+					loop do
+						send_info = @send_queue.pop
+						@socket.send(send_info[:info], 0, send_info[:ip], send_info[:port])
+					end
+				rescue Exception => e  
+					Log.info e.message	
+					Log.info e.backtrace
+					retry
+				end
+			end
+		end
+
+		def stop_all_thread
+			Thread.kill(@recive_thread) unless @recive_thread == nil 
+			@recive_thread = nil
+			Thread.kill(@send_thread) unless @send_thread == nil 
+			@send_thread = nil
+			Thread.kill(@event_thread) unless @event_thread == nil 
+			@event_thread = nil
+		end
+
 	end
 end
