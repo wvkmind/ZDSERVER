@@ -31,6 +31,9 @@ module Net
 		def ip
 			@ip
 		end
+		def node_type
+			@node_type
+		end
 		def initialize(node_type,ip_string,port_number)
 			@socket = UDPSocket.new
 			@socket.bind(ip_string, port_number)
@@ -69,6 +72,7 @@ module Net
 		end
 
 		def send(info,r)
+		    info = info.merge({event_name: r['name']})
 			@send_queue << {info: Packer.pack(info),ip: r[:ip],port: r[:port]}
 		end
 

@@ -27,7 +27,6 @@ Net::Connector.registergate('login',-> params,gete do
         ret = AccountHelper::login params['account'], params['password']
         session = ret[:session]
         user = ret[:user]
-        
         node = gete.insert_available_node(user[:id])
         if node != nil
             session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
