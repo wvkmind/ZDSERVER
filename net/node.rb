@@ -4,6 +4,7 @@ class Node < Net::Connector
     def self.create(node_id)
         node = Node.new(ServerConfig::NODE_TYPE[:logic],NetConfig::IP,0)
         node.set_node_id(node_id)
+        Timer.register(1000*30,->{node.check_heartbeats})
         node
     end
 
@@ -15,7 +16,7 @@ class Node < Net::Connector
         if DataBase._redis_.scard("Node#{@node_id}_U")>=NetConfig::NODE_LIMIT
             return false
         else
-            DataBase._redis_.sadd("Node#{@node_id}_U",user_id.to_s)
+            DataBase._redis_.sadd("Node#{@node_id}_U",user_id)
         end
     end
 
@@ -24,11 +25,16 @@ class Node < Net::Connector
     end
 
     def remove_users(user_id)
-        DataBase._redis_.srem("Node#{@node_id}_U",user_id.to_s)
+        DataBase._redis_.srem("Node#{@node_id}_U",user_id)
     end
 
     def flush_heartbeat(user_id)
-        DataBase._redis_.setex("Node#{@node_id}_H_#{user_id.to_s}",30,user_id.to_s)
+        if(node_users.include?(user_id.to_s)&&DataBase._redis_.exists("Node#{@node_id}_H_#{user_id}"))
+            DataBase._redis_.expire("Node#{@node_id}_H_#{user_id}",30)
+            return true
+        else
+            return false
+        end
     end
 
     def check_heartbeats

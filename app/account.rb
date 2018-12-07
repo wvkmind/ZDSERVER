@@ -7,12 +7,14 @@ Net::Connector.registergate('register',-> params,gete do
         else 
             user = User.find_by_id(params['id'])
         end
-        if(params['status']==0)
+        if(params['status']==0||params['status'].nil?)
             ps = AccountHelper.generate_password(params['password'])
             user[:hashed_password]=ps[:hash_password].to_s
             user[:salt]=ps[:salt].to_s
+            user[:status] = 0
         end
-        user[:status]=params['status']
+        raise 'Must have passwrod.' if user[:hashed_password].nil?
+        user[:status]=params['status'] unless params['status'].nil?
         user.save
         gete.send(user.to_h,params)
     rescue Exception => e
