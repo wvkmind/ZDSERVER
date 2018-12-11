@@ -24,19 +24,21 @@ end)
 
 Net::Connector.registergate('login',-> params,gete do
     begin
+        puts "------------------------"
+		time = (Time.now.to_f*1000).to_i
         ret = AccountHelper::login params['account'], params['password']
         session = ret[:session]
         user = ret[:user]
         node = gete.insert_available_node(user[:id])
         if node != nil
             session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
-            session[:ip] = node.ip
-            session[:port] = node.port
-            node.flush_heartbeat(user[:id])
-            gete.send(session.to_h,params)
+            node.flush_heartbeat(user[:id],params[:ip],params[:port])
+            gete.send({time: params['time'],ip: node.ip,port: node.port,token:session[:token]},params)
         else
             raise Exception.new('Server is full.')
         end
+        puts (Time.now.to_f*1000).to_i-time
+        puts "------------------------"
     rescue Exception => e
         puts e.message
         puts e.backtrace

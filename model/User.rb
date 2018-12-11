@@ -1,12 +1,6 @@
 class User < BaseModel
-	def not_null
-		[:account]
-	end
-
-	def uniq_vlaue
-		[:account]
-	end
-
+	self.table_name = "users"
+    self.primary_key = "id"
 	def to_h
 		{
 			id: self[:id],
@@ -15,6 +9,7 @@ class User < BaseModel
 	end
 
 	def deleted?
-        self[:status]!=0
-    end
+        status!=0
+	end
+
 end

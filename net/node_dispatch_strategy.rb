@@ -4,7 +4,7 @@ module NodeDispatchStrategy
             available_node = nil
             @nodes = [] if @nodes.nil?
             @nodes.each do |node|
-                available_node = node if node.node_users.include? user_id.to_s
+                available_node = node if node.node_users.include? user_id
             end
             
             @nodes.each do |node|
@@ -15,7 +15,7 @@ module NodeDispatchStrategy
             end if (available_node==nil)
 
             available_node = create_node if(available_node==nil)
-            
+
             available_node
         end
         def create_node

@@ -83,7 +83,6 @@ module Net
 					loop do
 						source = @recive_queue.pop
 						fire(source)
-						
 					end
 				rescue Exception => e  
 					Log.info e.message	
@@ -99,9 +98,9 @@ module Net
             end
             token = Base64.decode64 token
             account, id = token.split(':')
-            session = Session.find_by(:account,account).find_by(:token,id)[0]
+            session = Session.where(account: account,token: id).take
             unless session.nil?
-                return User.find_by(:account,account)[0][:id]
+                return User.find_by_account(account).id
             else
                 nil
             end
@@ -113,6 +112,8 @@ module Net
 				begin 
 					loop do
 						tmp_ = @socket.recvfrom(NetConfig::MTU)
+						
+							
 						data = Packer.unpack(tmp_[0])
 						data[:ip] = tmp_[1][2]
 						data[:port] = tmp_[1][1]
@@ -122,6 +123,7 @@ module Net
 						else
 							@recive_queue << data
 						end	
+						
 					end
 				rescue Exception => e  
 					Log.info e.message	

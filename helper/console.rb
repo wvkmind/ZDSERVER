@@ -12,7 +12,8 @@ trap('INT', 'SIG_IGN')
 
 
 LIST = [
-  'help', 'history', 'exit' ,'Log','Container::Box','Container::Box.put','Container::Box.get','Container::Box.box'
+  'help', 'history', 'exit' ,'Log','Container::Box','Container::Box.put','Container::Box.get','Container::Box.box',
+  'DataBase._redis_'
 ].sort
 
 comp = proc { |s| LIST.grep( /^#{Regexp.escape(s)}/ ) }
