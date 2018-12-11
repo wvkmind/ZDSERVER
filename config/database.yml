@@ -1,0 +1,7 @@
+adapter: mysql2
+pool: 5
+timeout: 5000
+host: mysqlserver.com
+username: esns
+password: minxing123
+database: zerodown
