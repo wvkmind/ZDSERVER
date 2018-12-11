@@ -1,6 +1,7 @@
 class Session < BaseModel
     self.table_name = "sessions"
     self.primary_key = "id"
+    @@session_mem = {}
     def self.update_session(account, token)
         session = Session.find_by_account(account)
         if session.nil?
@@ -10,5 +11,15 @@ class Session < BaseModel
             session.save
         end
         session
+    end
+    
+    def self.login(session,user_id)
+        @@session_mem[session[:account]] = {token: session[:token],user_id: user_id}
+    end
+    def self.loginout(account)
+        @@session_mem.delete(account)
+    end
+    def self.get_session(account)
+        @@session_mem[account]
     end
 end

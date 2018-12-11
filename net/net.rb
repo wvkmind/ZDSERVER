@@ -98,11 +98,11 @@ module Net
             end
             token = Base64.decode64 token
             account, id = token.split(':')
-            session = Session.where(account: account,token: id).take
-            unless session.nil?
-                return User.find_by_account(account).id
-            else
+            session = Session.get_session(account)
+            if session.nil? || session[:token] != id
                 nil
+            else
+                return session[:user_id]
             end
 		end
 

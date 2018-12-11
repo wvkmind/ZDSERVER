@@ -26,7 +26,19 @@ class Node < Net::Connector
     end
 
     def remove_users(user_id)
+        user = User.loginout(user_id)
+        Session.loginout(user[:account])
         @clients.delete(user_id)
+    end
+
+    def init_heartbeat(user_id,ip,port)
+        if(!node_users.include?(user_id)&&!DataBase._redis_.exists("Node#{@node_id}_H_#{user_id}"))
+            DataBase._redis_.setex("Node#{@node_id}_H_#{user_id}",30,"live")
+            @clients[user_id] = {ip: ip,port: port}
+            return true
+        else
+            return false
+        end
     end
 
     def flush_heartbeat(user_id,ip,port)
