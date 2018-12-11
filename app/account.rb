@@ -18,7 +18,7 @@ Net::Connector.registergate('register',-> params,gete do
         user.save
         gete.send(user.to_h,params)
     rescue Exception => e
-        gete.send({error:e.message},params)
+        gete.send({status: 1,error:e.message},params)
     end
 end)
 
@@ -29,17 +29,16 @@ Net::Connector.registergate('login',-> params,gete do
         user = ret[:user]
         node = gete.insert_available_node(user[:id])
         if node != nil
-            session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
-            raise Exception.new('This account has already been logged in.') unless node.init_heartbeat(user[:id],params[:ip],params[:port])
+            node.init_heartbeat(user[:id],params[:ip],params[:port])
             User.login(user)
             Session.login(session,user[:id])
-            gete.send({time: params['time'],ip: node.ip,port: node.port,token:session[:token]},params)
+            session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
+            gete.send({status: 0,time: params['time'],ip: node.ip,port: node.port,token:session[:token]},params)
         else
             raise Exception.new('Server is full.')
         end
     rescue Exception => e
-        puts e.message
-        puts e.backtrace
-        gete.send({error:e.message},params)
+        Log.re(e)
+        gete.send({status: 1,error:e.message},params)
     end
 end)

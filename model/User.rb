@@ -1,18 +1,17 @@
-class User < BaseModel
+class User < ActiveRecord::Base
 	self.table_name = "users"
 	self.primary_key = "id"
 	@@user_mem = {}
 	def to_h
 		{
+			status: 0,
 			id: self[:id],
 			account: self[:account]
 		}
 	end
-
-	def deleted?
-        status!=0
+	def self.user_mem
+		@@user_mem
 	end
-
 	def self.login(user)
         @@user_mem[user[:id]] = user
     end

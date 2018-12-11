@@ -1,5 +1,8 @@
 module NodeDispatchStrategy
     module NormalPatch
+        def nodes
+            @nodes
+        end
         def insert_available_node(user_id)
             available_node = nil
             @nodes = [] if @nodes.nil?

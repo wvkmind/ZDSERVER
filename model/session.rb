@@ -1,4 +1,4 @@
-class Session < BaseModel
+class Session < ActiveRecord::Base
     self.table_name = "sessions"
     self.primary_key = "id"
     @@session_mem = {}
@@ -12,7 +12,9 @@ class Session < BaseModel
         end
         session
     end
-    
+    def self.session_mem
+        @@session_mem
+    end
     def self.login(session,user_id)
         @@session_mem[session[:account]] = {token: session[:token],user_id: user_id}
     end

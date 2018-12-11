@@ -96,9 +96,9 @@ module Net
             if token.nil?
                 return nil
             end
-            token = Base64.decode64 token
-            account, id = token.split(':')
-            session = Session.get_session(account)
+			token = Base64.decode64 token
+			account, id = token.split(':')
+			session = Session.get_session(account)
             if session.nil? || session[:token] != id
                 nil
             else
@@ -112,9 +112,8 @@ module Net
 				begin 
 					loop do
 						tmp_ = @socket.recvfrom(NetConfig::MTU)
-						
-							
 						data = Packer.unpack(tmp_[0])
+						
 						data[:ip] = tmp_[1][2]
 						data[:port] = tmp_[1][1]
 						if @node_type == ServerConfig::NODE_TYPE[:logic]

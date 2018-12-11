@@ -4,10 +4,13 @@ class Node < Net::Connector
     def self.create(node_id)
         node = Node.new(ServerConfig::NODE_TYPE[:logic],NetConfig::IP,0)
         node.init_node(node_id)
-        Timer.register(1000*30,->{node.check_heartbeats})
+        Timer.register(5,->{node.check_heartbeats})
         node
     end
 
+    def clients
+        @clients
+    end
     def init_node(node_id)
         @node_id = node_id
         @clients = {}
@@ -52,8 +55,8 @@ class Node < Net::Connector
     end
 
     def check_heartbeats
-        node_users.each do |u|
-            remove_users(u) unless DataBase._redis_.exists("Node#{@node_id}_H_#{u[:id]}")
+        @clients.each do |key,value|
+            remove_users(key) unless DataBase._redis_.exists("Node#{@node_id}_H_#{key}")
         end
     end
     
