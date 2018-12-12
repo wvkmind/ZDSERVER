@@ -120,7 +120,7 @@ module Net
 							if data[:user_id] != nil
 								@recive_queue << data
 							else
-								send({status: 1,error:'totoken'},data)
+								send({status: 1,error:'notoken'},data)
 							end
 						else
 							@recive_queue << data
