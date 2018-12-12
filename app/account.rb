@@ -23,6 +23,7 @@ Net::Connector.registergate('register',-> params,gete do
 end)
 
 Net::Connector.registergate('login',-> params,gete do
+    puts "login"
     begin
         ret = AccountHelper::login params['account'], params['password']
         session = ret[:session]

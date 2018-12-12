@@ -113,12 +113,15 @@ module Net
 					loop do
 						tmp_ = @socket.recvfrom(NetConfig::MTU)
 						data = Packer.unpack(tmp_[0])
-						
 						data[:ip] = tmp_[1][2]
 						data[:port] = tmp_[1][1]
 						if @node_type == ServerConfig::NODE_TYPE[:logic]
 							data[:user_id] = check_token(data['token'])
-							@recive_queue << data if data[:user_id] != nil
+							if data[:user_id] != nil
+								@recive_queue << data
+							else
+								send({status: 1,error:'totoken'},data)
+							end
 						else
 							@recive_queue << data
 						end	
