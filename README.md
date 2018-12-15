@@ -3,35 +3,8 @@
 >存储数据
 >/model
 
-```ruby
-class  TestModel < BaseModel
-	def not_null
-    	[:not_null_column]#这些字段检查不能为空
-    end
-    def uniq_value
-    	[:a,:b]#这些字段检查唯一性
-    def uniq_vlaues
-    	[[:a,:b]]#这些字段组检查唯一性
-    end
-end
+ActiveRecord
 
-model = TestModel.new
-model[:some_column] = 1
-model[:other_column] = 2
-model.save
-
-model = TextModel.create({some_column: 1})
-
-model = TextModel.find_by_id(1)
-real_data = model[0]
-
-model = TextModel.find_by(:some_column,1)
-    			 .find_by(:other_column,
-                     	  ->r{
-                     			somefunction(f)#return bool
-                          })
-real_data = model[0]
-real_data.to_h #取出Hash，为了返回客户端
 ```
 >Event
 ```ruby
