@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 class Node < Net::Connector
 
+    DataBase.add_remove("Node_*")
+
     def self.create(node_id)
         node = Node.new(ServerConfig::NODE_TYPE[:logic],NetConfig::IP,0)
         node.init_node(node_id)
@@ -35,8 +37,8 @@ class Node < Net::Connector
     end
 
     def init_heartbeat(user_id,ip,port)
-        if(!node_users.include?(user_id)&&!DataBase._redis_.exists("Node#{@node_id}_H_#{user_id}"))
-            DataBase._redis_.setex("Node#{@node_id}_H_#{user_id}",30,"live")
+        if(!node_users.include?(user_id)&&!DataBase._redis_.exists("Node_#{@node_id}_H_#{user_id}"))
+            DataBase._redis_.setex("Node_#{@node_id}_H_#{user_id}",30,"live")
             @clients[user_id] = {ip: ip,port: port}
             return true
         else
@@ -45,8 +47,8 @@ class Node < Net::Connector
     end
 
     def flush_heartbeat(user_id,ip,port)
-        if(node_users.include?(user_id)&&DataBase._redis_.exists("Node#{@node_id}_H_#{user_id}"))
-            DataBase._redis_.expire("Node#{@node_id}_H_#{user_id}",30)
+        if(node_users.include?(user_id)&&DataBase._redis_.exists("Node_#{@node_id}_H_#{user_id}"))
+            DataBase._redis_.expire("Node_#{@node_id}_H_#{user_id}",30)
             @clients[user_id] = {ip: ip,port: port}
             return true
         else
@@ -56,7 +58,7 @@ class Node < Net::Connector
 
     def check_heartbeats
         @clients.each do |key,value|
-            remove_users(key) unless DataBase._redis_.exists("Node#{@node_id}_H_#{key}")
+            remove_users(key) unless DataBase._redis_.exists("Node_#{@node_id}_H_#{key}")
         end
     end
     

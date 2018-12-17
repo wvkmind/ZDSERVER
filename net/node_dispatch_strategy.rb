@@ -1,4 +1,5 @@
 module NodeDispatchStrategy
+    DataBase.add_remove("NodeNum")
     module NormalPatch
         def nodes
             @nodes
@@ -22,8 +23,9 @@ module NodeDispatchStrategy
             available_node
         end
         def create_node
-            if @nodes.length < NetConfig::PATCH_LIMIT
-                node = Node.create(@nodes.length)
+            node_num = DataBase._redis_.get("NodeNum")
+            if node_num.nil? or node_num < NetConfig::PATCH_LIMIT
+                node = Node.create(DataBase._redis_.incr("NodeNum"))
                 @nodes << node
                 node
             else

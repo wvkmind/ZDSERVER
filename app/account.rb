@@ -15,6 +15,8 @@ Net::Connector.registergate('register',-> params,gete do
         end
         raise 'Must have passwrod.' if user[:hashed_password].nil?
         user[:status]=params['status'] unless params['status'].nil?
+        raise Exception.new('Need role type.') if params['type'].nil?
+        user[:type]=params['type'].to_i
         user.save
         gete.send(user.to_h,params)
     rescue Exception => e
@@ -34,6 +36,7 @@ Net::Connector.registergate('login',-> params,gete do
             User.login(user)
             Session.login(session,user[:id])
             session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
+            Map.exit_some(user[:id])
             gete.send({status: 0,time: params['time'],ip: node.ip,port: node.port,token:session[:token]},params)
         else
             raise Exception.new('Server is full.')

@@ -20,6 +20,14 @@ class User < ActiveRecord::Base
     end
     def self.get_user(id)
         @@user_mem[id]
-    end
+	end
+	
+	def set_map_id(id)
+		@map_id = id
+	end
+
+	def map_id
+		@map_id
+	end
 
 end

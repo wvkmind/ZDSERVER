@@ -13,9 +13,14 @@ ActiveRecord::Base.establish_connection(db_conf)
 class DataBase
 
     include Singleton
+
+    @@remove_list = []
+
     public
+    
     def initialize
         @redis = Redis.new(host: NetConfig::REDIS_IP, port: NetConfig::REDIS_PORT)
+        
         super
     end
     def redis
@@ -23,5 +28,15 @@ class DataBase
     end
     def self._redis_
         DataBase.instance.redis
+    end
+    def self.add_remove(key)
+        @@remove_list << key
+    end
+    def self.exit
+        @@remove_list.each do |rkey|
+            DataBase._redis_.keys("#{rkey}*").each do |key|
+                DataBase._redis_.del(key)
+            end
+        end 
     end
 end 
