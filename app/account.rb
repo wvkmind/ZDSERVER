@@ -36,7 +36,7 @@ Net::Connector.registergate('login',-> params,gete do
             User.login(user)
             Session.login(session,user[:id])
             session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
-            Map.exit_some(user[:id])
+            Room.out(user[:id])
             gete.send({status: 0,time: params['time'],ip: node.ip,port: node.port,token:session[:token]},params)
         else
             raise Exception.new('Server is full.')

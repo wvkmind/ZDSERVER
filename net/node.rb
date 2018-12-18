@@ -39,7 +39,10 @@ class Node < Net::Connector
     def init_heartbeat(user_id,ip,port)
         if(!node_users.include?(user_id)&&!DataBase._redis_.exists("Node_#{@node_id}_H_#{user_id}"))
             DataBase._redis_.setex("Node_#{@node_id}_H_#{user_id}",30,"live")
-            @clients[user_id] = {ip: ip,port: port}
+            @clients[user_id] = 0
+            user = User.get_user(user_id)
+            user.set_ip_port({ip:ip ,port:port})
+            user.set_node(self)
             return true
         else
             return false
@@ -49,7 +52,10 @@ class Node < Net::Connector
     def flush_heartbeat(user_id,ip,port)
         if(node_users.include?(user_id)&&DataBase._redis_.exists("Node_#{@node_id}_H_#{user_id}"))
             DataBase._redis_.expire("Node_#{@node_id}_H_#{user_id}",30)
-            @clients[user_id] = {ip: ip,port: port}
+            @clients[user_id] = 0
+            user = User.get_user(user_id)
+            user.set_ip_port({ip:ip ,port:port})
+            user.set_node(self)
             return true
         else
             return false

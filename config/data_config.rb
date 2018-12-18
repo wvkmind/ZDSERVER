@@ -4,4 +4,10 @@ module DataConfig
         chat: 0,
         hunting: 1
     }
+    MAPDATA = {
+        'PORT' => [
+            'PORT',
+            'SHIPDECK'
+        ]
+    }
 end

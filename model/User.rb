@@ -30,4 +30,28 @@ class User < ActiveRecord::Base
 		@map_id
 	end
 
+	def set_room_id(id)
+		@room_id = id
+	end
+
+	def room_id
+		@room_id
+	end
+
+	def set_ip_port(data)
+		@ip_port = data
+	end
+
+	def ip_port
+		@ip_port
+	end
+
+	def set_node(data)
+		@node = data
+	end
+
+	def node
+		@node
+	end
+
 end

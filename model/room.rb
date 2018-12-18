@@ -22,6 +22,27 @@ class Room
         @@rooms.delete(id)
     end
 
+    def self.send_data(user_id,data,params)
+        user = User.get_user(user_id)
+        Map.maps[user.map_id].users.each do |map_user_id|
+            map_user = User.get_user(map_user_id)
+            params[:ip] = map_user.ip_port[:ip]
+            params[:port] = map_user.ip_port[:port]
+            map_user.node.send(data,params)
+        end
+    end
+
+    def self.join_map_or_room(room_id,password,map_name,user_id)
+        Map.exit_some(user_id)
+        @@rooms[room_id].join(password,user_id,map_name) 
+    end
+
+    def self.out_room(user_id)
+        Map.exit_some(user_id)
+        user = User.get_user(user_id)
+        user.set_room_id(nil)
+    end
+
     def initialize(attribute)
         @type = attribute[:type]
         @password = attribute[:password]
@@ -29,26 +50,40 @@ class Room
         @room_name = attribute[:room_name]
         @creator_id = attribute[:creator_id]
         @id=attribute[:id]
+        @maps = []
+        @map_index = {}
         create_maps
         @maps[0].join(@creator_id)
+        user = User.get_user(@creator_id)
+        user.set_room_id(@id)
     end
 
-    def create_maps
-        @maps = Map.create(@map_name,@id)
-        raise Exception.new('Create maps error.') if(@maps.nil?)
+    def select_map(map_name)
+        @maps[@map_index[map_name]]
+    end
+
+    def create_maps(main_map)
+        DataConfig::MAPDATA[main_map].each do |map|
+            @map_index[map] = @maps.length
+            @maps << Map.create(map,@id)
+        end
+        raise Exception.new('Create map error.') if @maps.length == 0
     end
  
-    def join(password,user_id)
+    def join(password,user_id,map_name)
         raise Exception.new('Password error.') if( @password != password )
         raise Exception.new('The room is full.') if users_length >= DataConfig::ROOMUSERLIMIT
-        @maps[0].join(user_id)
+        if map_name.nil?
+            @maps[0].join(user_id)
+        else
+            select_map(map_name).join(user_id)
+        end
     end
 
     def get_sample_info
         ret = {}
         ret[:thumb]=@maps[0].thumbnail
         ret[:title]=@room_name
-        
         ret[:user_number]="#{users_length}/#{DataConfig::ROOMUSERLIMIT}"
         ret[:user_list]=[]
         DataBase._redis_.smembers("RoomUserList_#{@id}").each do |user_id|
@@ -62,6 +97,7 @@ class Room
         un = 0 if un.nil?
         un
     end
+
     def same_one_out(user_id)
         if(user_id==@creator_id)
             if users_length > 0
