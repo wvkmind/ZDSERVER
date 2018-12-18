@@ -15,32 +15,34 @@ Net::Connector.registergate('register',-> params,gete do
         end
         raise 'Must have passwrod.' if user[:hashed_password].nil?
         user[:status]=params['status'] unless params['status'].nil?
+        raise Exception.new('Need role type.') if params['type'].nil?
+        user[:type]=params['type'].to_i
         user.save
         gete.send(user.to_h,params)
     rescue Exception => e
-        gete.send({error:e.message},params)
+        gete.send({status: 1,error:e.message},params)
     end
 end)
 
 Net::Connector.registergate('login',-> params,gete do
+    puts "login"
     begin
         ret = AccountHelper::login params['account'], params['password']
         session = ret[:session]
         user = ret[:user]
-        
         node = gete.insert_available_node(user[:id])
         if node != nil
+            node.init_heartbeat(user[:id],params[:ip],params[:port])
+            User.login(user)
+            Session.login(session,user[:id])
             session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
-            session[:ip] = node.ip
-            session[:port] = node.port
-            node.flush_heartbeat(user[:id])
-            gete.send(session.to_h,params)
+            Room.out(user[:id])
+            gete.send({status: 0,time: params['time'],ip: node.ip,port: node.port,token:session[:token]},params)
         else
             raise Exception.new('Server is full.')
         end
     rescue Exception => e
-        puts e.message
-        puts e.backtrace
-        gete.send({error:e.message},params)
+        Log.re(e)
+        gete.send({status: 1,error:e.message},params)
     end
 end)

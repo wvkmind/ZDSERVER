@@ -1,8 +1,8 @@
 module NetConfig
-    IP = "127.0.0.1"
+    IP = "192.168.91.27"
     PORT = 6666
     REDIS_IP = "127.0.0.1"
-    REDIS_PORT = 6666
+    REDIS_PORT = 6665
     NODE_NUM = 6
     MTU = 548
     PATCH_LIMIT = 5

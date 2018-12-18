@@ -31,6 +31,9 @@ module Net
 		def ip
 			@ip
 		end
+		def node_type
+			@node_type
+		end
 		def initialize(node_type,ip_string,port_number)
 			@socket = UDPSocket.new
 			@socket.bind(ip_string, port_number)
@@ -46,8 +49,7 @@ module Net
 			@send_thread = nil
 			@event_thread = nil
 			@node_type = node_type
-			
-			
+			Net::Connector.insert_node(self)
 			restart_recive_thread
 			restart_send_thread
 			restart_event_thread
@@ -70,6 +72,7 @@ module Net
 		end
 
 		def send(info,r)
+		    info = info.merge({event_name: r['name']})
 			@send_queue << {info: Packer.pack(info),ip: r[:ip],port: r[:port]}
 		end
 
@@ -80,7 +83,6 @@ module Net
 					loop do
 						source = @recive_queue.pop
 						fire(source)
-						
 					end
 				rescue Exception => e  
 					Log.info e.message	
@@ -94,13 +96,13 @@ module Net
             if token.nil?
                 return nil
             end
-            token = Base64.decode64 token
-            account, id = token.split(':')
-            session = Session.find_by(:account,account).find_by(:token,id)[0]
-            unless session.nil?
-                return User.find_by(:account,account)[0][:id]
-            else
+			token = Base64.decode64 token
+			account, id = token.split(':')
+			session = Session.get_session(account)
+            if session.nil? || session[:token] != id
                 nil
+            else
+                return session[:user_id]
             end
 		end
 
@@ -115,10 +117,15 @@ module Net
 						data[:port] = tmp_[1][1]
 						if @node_type == ServerConfig::NODE_TYPE[:logic]
 							data[:user_id] = check_token(data['token'])
-							@recive_queue << data if data[:user_id] != nil
+							if data[:user_id] != nil
+								@recive_queue << data
+							else
+								send({status: 1,error:'notoken'},data)
+							end
 						else
 							@recive_queue << data
 						end	
+						
 					end
 				rescue Exception => e  
 					Log.info e.message	
