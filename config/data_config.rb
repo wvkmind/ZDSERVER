@@ -10,4 +10,5 @@ module DataConfig
             'SHIPDECK'
         ]
     }
+    HALL_PAGE_LIMIT = 10
 end
