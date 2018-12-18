@@ -2,16 +2,16 @@ class Room
     
     @@rooms = {}
     DataBase.add_remove("Room")
-    def self.create(type,password,map_name,room_name,creator_id)
+    def self.create(password,map_name,room_name,creator_id)
         id = DataBase._redis_.incr("Room")
         @@rooms[id] = Room.new({
             id:id,
-            type:type,
             password:password,
             map_name:map_name,
             room_name:room_name,
             creator_id:creator_id
         })
+        id
     end
 
     def self.rooms
@@ -33,7 +33,8 @@ class Room
     end
 
     def self.join_map_or_room(room_id,password,map_name,user_id)
-        Map.exit_some(user_id)
+        user = User.get_user(user_id)
+        Map.exit_some(user_id,user.room_id!=room_id)
         @@rooms[room_id].join(password,user_id,map_name) 
     end
 
@@ -44,7 +45,6 @@ class Room
     end
 
     def initialize(attribute)
-        @type = attribute[:type]
         @password = attribute[:password]
         @map_name = attribute[:map_name]
         @room_name = attribute[:room_name]
@@ -73,6 +73,7 @@ class Room
     def join(password,user_id,map_name)
         raise Exception.new('Password error.') if( @password != password )
         raise Exception.new('The room is full.') if users_length >= DataConfig::ROOMUSERLIMIT
+        DataBase._redis_.sadd("RoomUserList_#{@room_id}",user_id)
         if map_name.nil?
             @maps[0].join(user_id)
         else
@@ -99,6 +100,7 @@ class Room
     end
 
     def same_one_out(user_id)
+        DataBase._redis_.srem("RoomUserList_#{@room_id}",user_id)
         if(user_id==@creator_id)
             if users_length > 0
                 @creator_id = DataBase._redis_.smembers("RoomUserList_#{@id}")[0].to_i
