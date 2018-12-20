@@ -10,4 +10,3 @@ module Main
         DataBase.exit
     end
 end
-

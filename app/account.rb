@@ -1,22 +1,22 @@
 Net::Connector.registergate('register',-> params,gete do
     begin
-        user = nil
-        if(params['id'].nil?)
-            user = User.new
-            user[:account]=params['account']
-        else 
-            user = User.find_by_id(params['id'])
-        end
-        if(params['status']==0||params['status'].nil?)
-            ps = AccountHelper.generate_password(params['password'])
-            user[:hashed_password]=ps[:hash_password].to_s
-            user[:salt]=ps[:salt].to_s
-            user[:status] = 0
-        end
+        user = User.new
+        user[:account]=params['account']
+        ps = AccountHelper.generate_password(params['password'])
+        user[:hashed_password]=ps[:hash_password].to_s
+        user[:salt]=ps[:salt].to_s
+        user[:status] = 0
         raise 'Must have passwrod.' if user[:hashed_password].nil?
         user[:status]=params['status'] unless params['status'].nil?
         raise Exception.new('Need role type.') if params['type'].nil?
         user[:type]=params['type'].to_i
+        user[:tra_rate]=params['tra_rate'].to_i
+        user[:phy_str_rate]=params['phy_str_rate'].to_i
+        user[:exp_rate]=params['exp_rate'].to_i
+        raise Exception.new("Hack?") if user[:tra_rate] + user[:phy_str_rate] + user[:exp_rate] > 5
+        user[:level]=1
+        user[:zhanyang]=0
+        user[:buliang]=0
         user.save
         gete.send(user.to_h,params)
     rescue Exception => e
