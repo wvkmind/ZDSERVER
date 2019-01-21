@@ -1,6 +1,7 @@
 Net::Connector.registergate('register',-> params,gete do
     begin
         User.transaction do
+            raise 'Account exsit.' if(User.find_by_account params['account'])
             user = User.new
             user[:account]=params['account']
             ps = AccountHelper.generate_password(params['password'])
