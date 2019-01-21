@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
 	self.table_name = "users"
 	self.primary_key = "id"
+	self.inheritance_column = '_type'
 	@@user_mem = {}
 	def to_h
 		{
