@@ -2,7 +2,7 @@ Net::Connector.registerlogic('hall_list',-> params,my_node do
     begin
         rooms = Room.rooms.keys
         sum = rooms.length
-        page = 1
+        page = 0
         if params['page']!=nil 
             page = params['page'].to_i - 1
         end
@@ -53,6 +53,26 @@ Net::Connector.registerlogic('to_map',-> params,my_node do
 end)
 
 Net::Connector.registerlogic('out_room',-> params,my_node do
+    begin
+        Room.out_room(params[:user_id])
+        my_node.send({status: 0},params)
+    rescue Exception => e
+        Room.out(params[:user_id])
+        my_node.send({status: 1,error:e.message},params)
+    end
+end)
+
+Net::Connector.registerlogic('in_labby',-> params,my_node do
+    begin
+        Room.out_room(params[:user_id])
+        my_node.send({status: 0},params)
+    rescue Exception => e
+        Room.out(params[:user_id])
+        my_node.send({status: 1,error:e.message},params)
+    end
+end)
+
+Net::Connector.registerlogic('chat_labby',-> params,my_node do
     begin
         Room.out_room(params[:user_id])
         my_node.send({status: 0},params)
