@@ -52,7 +52,7 @@ class Room
         @id=attribute[:id]
         @maps = []
         @map_index = {}
-        create_maps
+        create_maps(@map_name)
         @maps[0].join(@creator_id)
         user = User.get_user(@creator_id)
         user.set_room_id(@id)
@@ -84,6 +84,7 @@ class Room
     def get_sample_info
         ret = {}
         ret[:thumb]=@maps[0].thumbnail
+        ret[:map_name]=@map_name
         ret[:title]=@room_name
         ret[:user_number]="#{users_length}/#{DataConfig::ROOMUSERLIMIT}"
         ret[:user_list]=[]

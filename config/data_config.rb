@@ -5,9 +5,11 @@ module DataConfig
         hunting: 1
     }
     MAPDATA = {
-        'PORT' => [
-            'PORT',
-            'SHIPDECK'
+        'ChickenHouse.spr' => [
+            'ChickenHouse.spr',
+            'CowCage.spr',
+            'HenhouseBackGarden.spr',
+            'HenhouseInside.spr'
         ]
     }
     HALL_PAGE_LIMIT = 6
