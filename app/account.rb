@@ -46,8 +46,9 @@ Net::Connector.registergate('login',-> params,gete do
                     time: params['time'],
                     ip: node.ip,
                     port: node.port,
-                    token:session[:token]
-                }.merge(user.to_client),
+                    token:session[:token],
+                    user:user.to_client
+                },
                 params
             )
         else
