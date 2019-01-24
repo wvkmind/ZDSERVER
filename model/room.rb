@@ -71,7 +71,7 @@ class Room
     end
  
     def join(password,user_id,map_name)
-        raise Exception.new('Password error.') if( @password != password )
+        raise Exception.new('Password error.') if @password && ( @password != password )
         raise Exception.new('The room is full.') if users_length >= DataConfig::ROOMUSERLIMIT
         DataBase._redis_.sadd("RoomUserList_#{@room_id}",user_id)
         if map_name.nil?
