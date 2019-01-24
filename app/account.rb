@@ -11,6 +11,7 @@ Net::Connector.registergate('register',-> params,gete do
             raise 'Must have passwrod.' if user[:hashed_password].nil?
             user[:status]=params['status'] unless params['status'].nil?
             raise Exception.new('Need role type.') if params['type'].nil?
+            user[:name]=parmas['name'].to_s
             user[:type]=params['type'].to_i
             user[:tra_rate]=params['tra_rate'].to_i
             user[:phy_str_rate]=params['phy_str_rate'].to_i
@@ -39,7 +40,16 @@ Net::Connector.registergate('login',-> params,gete do
             node.init_heartbeat(user[:id],params[:ip],params[:port])
             session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
             Room.out_room(user[:id])
-            gete.send({status: 0,time: params['time'],ip: node.ip,port: node.port,token:session[:token]},params)
+            gete.send(
+                {
+                    status: 0,
+                    time: params['time'],
+                    ip: node.ip,
+                    port: node.port,
+                    token:session[:token]
+                }.merge(user.to_client),
+                params
+            )
         else
             raise Exception.new('Server is full.')
         end

@@ -10,6 +10,21 @@ class User < ActiveRecord::Base
 			account: self[:account]
 		}
 	end
+	def to_client
+		{
+			status:0,
+			id: id,
+			account: account,
+			name:name,
+			type:type,
+			tra_rate:tra_rate,
+			phy_str_rate:phy_str_rate,
+			exp_rate:exp_rate,
+			level:level,
+			zhanyang:zhanyang,
+			buliang:buliang
+		}
+	end
 	def self.user_mem
 		@@user_mem
 	end
