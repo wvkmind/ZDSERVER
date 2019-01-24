@@ -11,7 +11,7 @@ Net::Connector.registergate('register',-> params,gete do
             raise 'Must have passwrod.' if user[:hashed_password].nil?
             user[:status]=params['status'] unless params['status'].nil?
             raise Exception.new('Need role type.') if params['type'].nil?
-            user[:name]=parmas['user_name'].to_s
+            user[:name]=params['user_name'].to_s
             user[:type]=params['type'].to_i
             user[:tra_rate]=params['tra_rate'].to_i
             user[:phy_str_rate]=params['phy_str_rate'].to_i
