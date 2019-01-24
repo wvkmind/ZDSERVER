@@ -1,4 +1,5 @@
 Net::Connector.registerlogic('hall_list',-> params,my_node do
+    Room.out_room(params[:user_id])
     begin
         rooms = Room.rooms.keys
         sum = rooms.length
@@ -34,7 +35,7 @@ Net::Connector.registerlogic('create_room',-> params,my_node do
         room_id = Room.create(params['password'],params['map_name'],params['room_name'],params[:user_id])
         my_node.send({status: 0,room_id:room_id},params) 
     rescue Exception => e
-        Room.out(params[:user_id])
+        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
@@ -48,7 +49,7 @@ Net::Connector.registerlogic('to_map',-> params,my_node do
         Room.join_map_or_room(room_id,params['password'],params['map_name'],params[:user_id])
         my_node.send({status: 0},params)
     rescue Exception => e
-        Room.out(params[:user_id])
+        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
@@ -58,7 +59,7 @@ Net::Connector.registerlogic('out_room',-> params,my_node do
         Room.out_room(params[:user_id])
         my_node.send({status: 0},params)
     rescue Exception => e
-        Room.out(params[:user_id])
+        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
@@ -68,7 +69,7 @@ Net::Connector.registerlogic('in_labby',-> params,my_node do
         Room.out_room(params[:user_id])
         my_node.send({status: 0},params)
     rescue Exception => e
-        Room.out(params[:user_id])
+        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
@@ -78,7 +79,7 @@ Net::Connector.registerlogic('chat_labby',-> params,my_node do
         Room.out_room(params[:user_id])
         my_node.send({status: 0},params)
     rescue Exception => e
-        Room.out(params[:user_id])
+        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
