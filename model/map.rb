@@ -33,7 +33,6 @@ class Map
         @map_name = attribute[:map_name]
         @room_id = attribute[:room_id]
         @mutex=Mutex.new
-        create_maps
         @id=attribute[:id]
     end
  
