@@ -3,6 +3,7 @@ class Room
     @@rooms = {}
     DataBase.add_remove("Room")
     def self.create(password,map_name,room_name,creator_id)
+        Room.out_room(creator_id)
         id = DataBase._redis_.incr("Room")
         @@rooms[id] = Room.new({
             id:id,
@@ -35,6 +36,7 @@ class Room
     def self.join_map_or_room(room_id,password,map_name,user_id)
         user = User.get_user(user_id)
         Map.exit_some(user_id,user.room_id!=room_id)
+        user.set_room_id(room_id)
         @@rooms[room_id].join(password,user_id,map_name) 
     end
 

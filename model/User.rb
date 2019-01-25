@@ -29,9 +29,11 @@ class User < ActiveRecord::Base
 		@@user_mem
 	end
 	def self.login(user)
+		Room.out_room(user[:id]);
         @@user_mem[user[:id]] = user
     end
-    def self.loginout(id)
+	def self.loginout(id)
+		Room.out_room(id);
         @@user_mem.delete(id)
     end
     def self.get_user(id)

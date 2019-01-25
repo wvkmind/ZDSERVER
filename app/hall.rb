@@ -1,5 +1,4 @@
 Net::Connector.registerlogic('hall_list',-> params,my_node do
-    Room.out_room(params[:user_id])
     begin
         rooms = Room.rooms.keys
         sum = rooms.length
@@ -31,11 +30,9 @@ Net::Connector.registerlogic('create_room',-> params,my_node do
     begin
         raise Exception.new ('Map name error.') unless params['map_name'].present?
         raise Exception.new ('Room name error.') unless params['room_name'].present?
-        Room.out_room(params[:user_id])
         room_id = Room.create(params['password'],params['map_name'],params['room_name'],params[:user_id])
         my_node.send({status: 0,room_id:room_id},params) 
     rescue Exception => e
-        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
@@ -45,11 +42,9 @@ Net::Connector.registerlogic('to_map',-> params,my_node do
         raise Exception.new ('Room id error.') unless params['room_id'].present?
         raise Exception.new ('Password error.') unless params['password'].present?
         raise Exception.new ('Map name error.') unless params['map_name'].present?
-        Room.out_room(params[:user_id])
         Room.join_map_or_room(room_id,params['password'],params['map_name'],params[:user_id])
         my_node.send({status: 0},params)
     rescue Exception => e
-        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
@@ -59,27 +54,22 @@ Net::Connector.registerlogic('out_room',-> params,my_node do
         Room.out_room(params[:user_id])
         my_node.send({status: 0},params)
     rescue Exception => e
-        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
 
 Net::Connector.registerlogic('in_labby',-> params,my_node do
     begin
-        Room.out_room(params[:user_id])
         my_node.send({status: 0},params)
     rescue Exception => e
-        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
 
 Net::Connector.registerlogic('chat_labby',-> params,my_node do
     begin
-        Room.out_room(params[:user_id])
         my_node.send({status: 0},params)
     rescue Exception => e
-        Room.out_room(params[:user_id])
         my_node.send({status: 1,error:e.message},params)
     end
 end)
