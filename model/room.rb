@@ -41,9 +41,9 @@ class Room
     end
 
     def self.out_room(user_id)
-        Map.exit_some(user_id)
         user = User.get_user(user_id)
-        user.set_room_id(nil)
+        user.set_room_id(nil) if user
+        Map.exit_some(user_id)
     end
 
     def initialize(attribute)
