@@ -74,7 +74,7 @@ class User < ActiveRecord::Base
 	end
 
 	def room_pos
-		@room_pos
+		@room_pos || [0,0,0,0,0]
 	end
 
 	def set_room_pos(pos)
