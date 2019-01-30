@@ -30,6 +30,7 @@ Net::Connector.registerlogic('create_room',-> params,my_node do
     begin
         raise Exception.new ('Map name error.') unless params['map_name'].present?
         raise Exception.new ('Room name error.') unless params['room_name'].present?
+        params['password'] = nil if params['password'] == '' or params['password'] == nil
         room_id = Room.create(params['password'],params['map_name'],params['room_name'],params[:user_id])
         my_node.send({status: 0,room_id:room_id},params) 
     rescue Exception => e
@@ -40,10 +41,18 @@ end)
 Net::Connector.registerlogic('to_map',-> params,my_node do
     begin
         raise Exception.new ('Room id error.') unless params['room_id'].present?
-        raise Exception.new ('Password error.') unless params['password'].present?
         raise Exception.new ('Map name error.') unless params['map_name'].present?
+        params['password'] = nil if params['password'] == '' or params['password'] == nil
         Room.join_map_or_room(params['room_id'],params['password'],params['map_name'],params[:user_id])
-        my_node.send({status: 0},params)
+        my_node.send({status: 0,other_user: Room.get_other_info(params[:user_id])},params)
+    rescue Exception => e
+        my_node.send({status: 1,error:e.message},params)
+    end
+end)
+
+Net::Connector.registerlogic('flush_room',-> params,my_node do
+    begin
+        my_node.send({status: 0,other_user: Room.get_other_info(params[:user_id])},params)
     rescue Exception => e
         my_node.send({status: 1,error:e.message},params)
     end

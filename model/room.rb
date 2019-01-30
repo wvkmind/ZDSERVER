@@ -2,7 +2,7 @@ class Room
     
     @@rooms = {}
     DataBase.add_remove("Room")
-    def self.create(password,map_name,room_name,creator_id)
+    def self.password(password,map_name,room_name,creator_id)
         Room.out_room(creator_id)
         id = DataBase._redis_.incr("Room")
         @@rooms[id] = Room.new({
@@ -85,13 +85,24 @@ class Room
 
     def get_sample_info
         ret = {}
+        ret[:id]=@id
         ret[:thumb]=@maps[0].thumbnail
         ret[:map_name]=@map_name
         ret[:title]=@room_name
         ret[:user_number]="#{users_length}/#{DataConfig::ROOMUSERLIMIT}"
         ret[:user_list]=[]
+        ret[:has_password] = @password.nil? 
         DataBase._redis_.smembers("RoomUserList_#{@id}").each do |user_id|
             ret[:user_list] << User.get_user(user_id.to_i)[:type]
+        end
+        ret
+    end
+
+    def get_other_info(user_id)
+        ret = []
+        user = User.get_user(user_id)
+        Map.maps[user.map_id].users.each do |map_user_id|
+            ret << User.get_user(map_user_id).to_client
         end
         ret
     end
