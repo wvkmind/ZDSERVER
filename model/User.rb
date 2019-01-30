@@ -22,7 +22,8 @@ class User < ActiveRecord::Base
 			exp_rate:exp_rate,
 			level:level,
 			zhanyang:zhanyang,
-			buliang:buliang
+			buliang:buliang,
+			room_pos:room_pos
 		}
 	end
 	def self.user_mem
