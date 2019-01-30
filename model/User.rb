@@ -72,4 +72,12 @@ class User < ActiveRecord::Base
 		@node
 	end
 
+	def room_pos
+		@room_pos
+	end
+
+	def set_room_pos(pos)
+		@room_pos = pos
+	end
+
 end

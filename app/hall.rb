@@ -42,7 +42,7 @@ Net::Connector.registerlogic('to_map',-> params,my_node do
         raise Exception.new ('Room id error.') unless params['room_id'].present?
         raise Exception.new ('Password error.') unless params['password'].present?
         raise Exception.new ('Map name error.') unless params['map_name'].present?
-        Room.join_map_or_room(room_id,params['password'],params['map_name'],params[:user_id])
+        Room.join_map_or_room(params['room_id'],params['password'],params['map_name'],params[:user_id])
         my_node.send({status: 0},params)
     rescue Exception => e
         my_node.send({status: 1,error:e.message},params)

@@ -23,8 +23,8 @@ class Room
         @@rooms.delete(id)
     end
 
-    def self.send_data(user_id,data,params)
-        user = User.get_user(user_id)
+    def self.send_data(sender_user_id,data,params)
+        user = User.get_user(sender_user_id)
         Map.maps[user.map_id].users.each do |map_user_id|
             map_user = User.get_user(map_user_id)
             params[:ip] = map_user.ip_port[:ip]
