@@ -91,7 +91,7 @@ class Room
         ret[:title]=@room_name
         ret[:user_number]="#{users_length}/#{DataConfig::ROOMUSERLIMIT}"
         ret[:user_list]=[]
-        ret[:has_password] = @password.nil? 
+        ret[:has_password] = !@password.nil? 
         DataBase._redis_.smembers("RoomUserList_#{@id}").each do |user_id|
             ret[:user_list] << User.get_user(user_id.to_i)[:type]
         end
