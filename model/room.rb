@@ -97,8 +97,8 @@ class Room
         end
         ret
     end
-
-    def get_other_info(user_id)
+    
+    def self.get_other_info(user_id)
         ret = []
         user = User.get_user(user_id)
         Map.maps[user.map_id].users.each do |map_user_id|
