@@ -2,7 +2,7 @@ class Room
     
     @@rooms = {}
     DataBase.add_remove("Room")
-    def self.password(password,map_name,room_name,creator_id)
+    def self.create(password,map_name,room_name,creator_id)
         Room.out_room(creator_id)
         id = DataBase._redis_.incr("Room")
         @@rooms[id] = Room.new({
