@@ -23,7 +23,7 @@ module NodeDispatchStrategy
             available_node
         end
         def create_node
-            node_num = DataBase._redis_.get("NodeNum")
+            node_num = DataBase._redis_.get("NodeNum").to_i
             if node_num.nil? or node_num < NetConfig::PATCH_LIMIT
                 node = Node.create(DataBase._redis_.incr("NodeNum"))
                 @nodes << node
