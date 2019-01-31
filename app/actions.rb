@@ -12,7 +12,7 @@ Net::Connector.registerlogic('cp',-> params,my_node do
 end)
 
 #表情
-Net::Connector.registerlogic('ac',-> params,my_node do
+Net::Connector.registerlogic('exp',-> params,my_node do
     begin
         user = User.get_user(params[:user_id])
         user.set_room_pos(params['ac_data'])
