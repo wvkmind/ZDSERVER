@@ -32,6 +32,7 @@ class Node < Net::Connector
 
     def remove_users(user_id)
         user = User.loginout(user_id)
+        Room.out_room(user[:id])
         Session.loginout(user[:account])
         @clients.delete(user_id)
     end
