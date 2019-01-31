@@ -45,7 +45,7 @@ Net::Connector.registerlogic('to_map',-> params,my_node do
         params['password'] = nil if params['password'] == '' or params['password'] == nil
         Room.join_map_or_room(params['room_id'],params['password'],params['map_name'],params[:user_id])
     
-        Room.send_data(params[:user_id],{new_one: User.get_user(params[:user_id]).to_client},{name: :new_one})
+        Room.send_data(params[:user_id],{new_one: User.get_user(params[:user_id]).to_client},{'name'=>'new_one'})
         my_node.send({status: 0,other_user: Room.get_other_info(params[:user_id])},params)
     rescue Exception => e
         my_node.send({status: 1,error:e.message},params)
