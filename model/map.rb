@@ -18,7 +18,7 @@ class Map
     end
 
     def self.exit_some(user_id,change=true)
-        @@maps[@@map_user_map[user_id]].out(user_id,change) unless @@map_user_map[user_id].nil?
+        @@maps[@@map_user_map[user_id]].out(user_id,change) if !@@map_user_map[user_id].nil? && !@@maps[@@map_user_map[user_id]].ni?
     end
 
     def id
