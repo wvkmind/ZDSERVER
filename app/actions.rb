@@ -15,10 +15,6 @@ end)
 Net::Connector.registerlogic('exp',-> params,my_node do
     begin
         user = User.get_user(params[:user_id])
-        a = user.room_pos
-        a[3] = a[0]
-        a[4] = a[1]
-        user.set_room_pos(a)
         Room.send_data(params[:user_id],{ac_data:params['ac_data']}.merge({id: params[:user_id]}),params)
     rescue Exception => e
         Room.out_room(params[:user_id])
