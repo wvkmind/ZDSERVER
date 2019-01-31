@@ -30,7 +30,7 @@ class Room
             params[:ip] = map_user.ip_port[:ip]
             params[:port] = map_user.ip_port[:port]
             map_user.node.send(data,params)
-        end
+        end if Map.maps[user.map_id]
     end
 
     def self.join_map_or_room(room_id,password,map_name,user_id)
