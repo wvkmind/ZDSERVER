@@ -41,7 +41,7 @@ class Room
     end
 
     def self.out_room(user_id)
-        Room.send_data(user_id,User.get_user(user_id).to_client,{name: :out_one})
+        Room.send_data(user_id,{out_one: User.get_user(user_id).to_client},{name: :out_one})
         user = User.get_user(user_id)
         user.set_room_id(nil) if user
         Map.exit_some(user_id)
