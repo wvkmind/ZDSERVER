@@ -152,7 +152,7 @@ class User < ActiveRecord::Base
 		if new_tilizhi < tilizhi
 			tilizhi = new_tilizhi
 			Job.add( -> do
-				Room.send_data(id,{id:id,tilizhi:tilizhi}),{'name'=>cut_tilizhi})
+				Room.send_data(id,{id:id,tilizhi:tilizhi}),{'name'=>'ptlz'})
 			end)
 		end
 	end
@@ -163,7 +163,7 @@ class User < ActiveRecord::Base
 		if new_tilizhi > tilizhi
 			tilizhi = new_tilizhi
 			Job.add( -> do
-				Room.send_data(id,{id:id,tilizhi:tilizhi}),{'name'=>add_tilizhi})
+				Room.send_data(id,{id:id,tilizhi:tilizhi}),{'name'=>'ptlz'})
 			end)
 		end
 	end
@@ -182,7 +182,7 @@ class User < ActiveRecord::Base
 		if new_level > level
 			level = new_level
 			Job.add( -> do
-				Room.send_data(id,{id:id,leve_up:level}),{'name'=>leve_up})
+				Room.send_data(id,{id:id,leve_up:level}),{'name'=>'plu'})
 			end)
 		end
 	end

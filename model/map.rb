@@ -72,7 +72,7 @@ class Map
             item = @items[pos]
             @items[pos] = nil
             Job.add( -> do
-                Room.send_data(user.id,{map_id: @id}),{'name'=>'removeitem'})
+                Room.send_data(user.id,{map_id: @id,pos:pos}),{'name'=>'removeitem'})
             end)
             return item
         else
@@ -89,7 +89,7 @@ class Map
                 if item.energy == 0
                     @items[pos] = nil
                     Job.add( -> do
-                        Room.send_data(user.id,{map_id: @id}),{'name'=>'removeitem'})
+                        Room.send_data(user.id,{map_id: @id,pos:pos}),{'name'=>'removeitem'})
                     end)
                 end
                 return true
