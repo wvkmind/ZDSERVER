@@ -127,4 +127,39 @@ class Room
             end
         end
     end
+    def self.get_map(user_id)
+        user = User.get_user(user_id)
+        map = Map.maps[user.map_id]
+    end
+
+    def self.pick_items(user_id,pos)
+        user = User.get_user(user_id)
+        map = Map.maps[user.map_id]
+        item = map.pick_items(pos)
+        raise "PickFalse" if item.nil?
+        user.add_item(item) if item.is_garbage?
+    end
+
+    def self.items(user_id,pos)
+        Room.get_map(user_id).items
+    end
+
+    def self.talk(user_id,message)
+        Room.get_map(user_id).talk(message)
+    end
+
+    def self.talk_list(user_id)
+        Room.get_map(user_id).talk_list
+    end
+
+    def self.eat(user_id,pos)
+        user = User.get_user(user_id)
+        map = Map.maps[user.map_id]
+        map.eat(user,pos)
+    end
+    def self.cancel_eat(user_id,pos)
+        user = User.get_user(user_id)
+        map = Map.maps[user.map_id]
+        map.cancel_eat(pos)
+    end
 end

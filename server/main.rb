@@ -5,7 +5,8 @@ module Main
     begin
         Log.write
         Container::Box.put(:dispatch,NodeDispatchPort.new(ServerConfig::NODE_TYPE[:gate],NetConfig::IP,NetConfig::PORT))
-        CONSOLE.join    
+        Job.run
+        CONSOLE.join
     ensure
         DataBase.exit
     end

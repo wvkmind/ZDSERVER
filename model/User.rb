@@ -2,12 +2,15 @@ class User < ActiveRecord::Base
 	self.table_name = "users"
 	self.primary_key = "id"
 	self.inheritance_column = '_type'
+
+	has_many: :packages, class_name: "Package", foreign_key: "package_id"
+
 	@@user_mem = {}
 	def to_h
 		{
 			status: 0,
-			id: self[:id],
-			account: self[:account]
+			id: id,
+			account: account
 		}
 	end
 	def to_client
@@ -22,6 +25,7 @@ class User < ActiveRecord::Base
 			exp_rate:exp_rate,
 			level:level,
 			zhanyang:zhanyang,
+			tilizhi: tilizhi,
 			buliang:buliang,
 			room_pos:room_pos
 		}
@@ -30,13 +34,18 @@ class User < ActiveRecord::Base
 		@@user_mem
 	end
 	def self.login(user)
-		Room.out_room(user[:id]);
+		loginoutsave(@@user_mem[id])
+		Room.out_room(user[:id])
         @@user_mem[user[:id]] = user
     end
 	def self.loginout(id)
-		Room.out_room(id);
+		loginoutsave(@@user_mem[id])
+		Room.out_room(id)
         @@user_mem.delete(id)
-    end
+	end
+	def self.loginoutsave(user)
+		user.save unless user.nil?
+	end
     def self.get_user(id)
         @@user_mem[id]
 	end
@@ -79,6 +88,103 @@ class User < ActiveRecord::Base
 
 	def set_room_pos(pos)
 		@room_pos = pos
+	end
+
+	def add_item(item)
+		User.transaction do
+			have_item = packages.where(type: item.type,item_id: item.get_id).take
+			if have_item.nil?
+				packages << Package.create({
+					type: item.type,
+					item_id: item.get_id,
+					count: 1
+				})
+				self.save
+			else
+				have_item.count = have_item.count + 1
+				have_item.save
+			end
+		end
+	end
+
+	def remove_item(item)
+		User.transaction do
+			have_item = packages.where(type: item.type,item_id: item.get_id).take
+			if have_item.nil?
+				return -1
+			else
+				have_item.count = have_item.count - 1
+				if have_item.count > 0
+					return have_item.count
+					have_item.save
+				else
+					have_item.destroy
+					return 0
+				end
+			end
+		end
+	end
+
+	def get_packages_to_client
+		ret = []
+		packages.each do |item|
+			ret << {
+				type: item.type,
+				id: item.item_id,
+				count: item.count
+			}
+		end
+		ret
+	end
+
+	def eat(id)
+		step = 0.001*(exp_rate+1)*DataConfig::LEVEL_EXP[level]
+		add_exp(step)
+
+		step = 0.001*(phy_str_rate+id+1)*100
+		add_tilizhi(step)
+		
+	end
+
+	def cut_tilizhi(step)
+		new_tilizhi = tilizhi - step
+		new_tilizhi = 0 if new_tilizhi < 0
+		if new_tilizhi < tilizhi
+			tilizhi = new_tilizhi
+			Job.add( -> do
+				Room.send_data(id,{id:id,tilizhi:tilizhi}),{'name'=>cut_tilizhi})
+			end)
+		end
+	end
+
+	def add_tilizhi(step)
+		new_tilizhi = tilizhi + step
+		new_tilizhi = 100 if new_tilizhi > 100
+		if new_tilizhi > tilizhi
+			tilizhi = new_tilizhi
+			Job.add( -> do
+				Room.send_data(id,{id:id,tilizhi:tilizhi}),{'name'=>add_tilizhi})
+			end)
+		end
+	end
+
+	def pick_exp
+		step = 0.001*(exp_rate+1)*DataConfig::LEVEL_EXP[level]
+		add_exp(step)
+	end
+
+	def add_exp(step)
+		exp = exp + step
+		new_level = level
+		(DataConfig::LEVEL_EXP[level]..DataConfig::LEVEL_EXP.length-1).each_with_index do |limit,i|
+			new_level = i  if exp >= limit
+		end
+		if new_level > level
+			level = new_level
+			Job.add( -> do
+				Room.send_data(id,{id:id,leve_up:level}),{'name'=>leve_up})
+			end)
+		end
 	end
 
 end

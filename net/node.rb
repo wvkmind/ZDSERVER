@@ -6,7 +6,7 @@ class Node < Net::Connector
     def self.create(node_id)
         node = Node.new(ServerConfig::NODE_TYPE[:logic],NetConfig::IP,0)
         node.init_node(node_id)
-        Timer.register(5,->{node.check_heartbeats})
+        Timer.register(300,->{node.check_heartbeats})
         node
     end
 
