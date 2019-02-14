@@ -15,10 +15,8 @@ class Map
     end
 
     def self.remove(id)
+        @@maps[id].destory
         @@maps.delete(id)
-        DataBase._redis_.del("MapUserList_#{id}")
-        DataBase._redis_.del("MapItemPos_#{id}")
-        DataBase._redis_.del("MapTalk_#{id}")
     end
 
     def self.exit_some(user_id,change=true)
@@ -39,7 +37,8 @@ class Map
         @mutex=Mutex.new
         @items = []
         (0..9).each {|i|@items[i]=nil}
-        Timer.register(30,->{self.flush_item})
+        @proc = ->{self.flush_item}
+        Timer.register(30,@proc)
         @id=attribute[:id]
         @MapItemPos = "MapItemPos_#{@id}"
         @MapUserList = "MapUserList_#{@id}"
@@ -180,4 +179,12 @@ class Map
     def talk_list
         list = DataBase._redis_.zrange(@MapTalk,-20,-1)
     end
+
+    def destory
+        Timer.unregister(30,@proc)
+        DataBase._redis_.del("MapUserList_#{@id}")
+        DataBase._redis_.del("MapItemPos_#{@id}")
+        DataBase._redis_.del("MapTalk_#{@id}")
+    end
+    
 end

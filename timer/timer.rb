@@ -19,7 +19,7 @@ module Timer
 				cao = Time.now.to_f
 				begin 
 					while(1)do 
-						sleep(0)
+						sleep(1)
 						caoni = Time.now.to_f
 						caonima = caoni - cao
 						if caonima.to_f < 0.001
