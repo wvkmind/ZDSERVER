@@ -16,6 +16,9 @@ class Map
 
     def self.remove(id)
         @@maps.delete(id)
+        DataBase._redis_.del("MapUserList_#{id}")
+        DataBase._redis_.del("MapItemPos_#{id}")
+        DataBase._redis_.del("MapTalk_#{id}")
     end
 
     def self.exit_some(user_id,change=true)
