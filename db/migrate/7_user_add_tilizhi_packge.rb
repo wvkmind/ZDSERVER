@@ -1,4 +1,4 @@
-class UserAddTilizhiPackage < ActiveRecord::Migration[5.2]
+class UserAddTilizhiPackge < ActiveRecord::Migration[5.2]
     def change
         create_table :packages do |t|
             t.column :type, :integer
