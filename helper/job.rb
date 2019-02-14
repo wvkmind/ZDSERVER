@@ -1,6 +1,6 @@
 class Job
     @@jobs = Queue.new
-    def self.add_job(proc)
+    def self.add(proc)
         @@jobs << proc
     end
     def self.run

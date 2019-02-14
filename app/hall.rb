@@ -50,7 +50,7 @@ Net::Connector.registerlogic('to_map',-> params,my_node do
                         map_id: map_id,
                         other_user: Room.get_other_info(params[:user_id]),
                         talk_list: Room.talk_list(params[:user_id]),
-                        item_list: Room.items(params[:user_id])
+                        item_list: Room.item_list(params[:user_id])
                     },params)
     rescue Exception => e
         my_node.send({status: 1,error:e.message},params)
@@ -62,9 +62,11 @@ Net::Connector.registerlogic('flush_room',-> params,my_node do
         my_node.send({
             status: 0,
             other_user: Room.get_other_info(params[:user_id]),
-            item_list: Room.items(params[:user_id])
+            item_list: Room.item_list(params[:user_id])
         },params)
     rescue Exception => e
+        puts e.message
+        puts e.backtrace.join("\n")
         my_node.send({status: 1,error:e.message},params)
     end
 end)

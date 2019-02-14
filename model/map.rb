@@ -63,15 +63,20 @@ class Map
     def get_items
         ret = []
         @items.each do |item|
-            ret << item.to_client
+            if item.nil?
+                ret << nil
+            else
+                ret << item.to_client
+            end
         end
+        ret
     end
 
     def pick_items(user,pos)
         if(DataBase._redis_.srem(@MapItemPos,pos).to_i==1)
             item = @items[pos]
             @items[pos] = nil
-            send_change_item(user.id)
+            send_change_item
             return item
         else
             return nil
@@ -87,7 +92,7 @@ class Map
         end
     end
 
-    def send_change_item(user_id)
+    def send_change_item
         Job.add( -> do
             send_data({item_list:get_items},{'name'=>'change_item'})
         end)
@@ -101,7 +106,7 @@ class Map
                 user.eat(item.id)
                 if item.energy == 0
                     @items[pos] = nil
-                    send_change_item(user.id)
+                    send_change_item
                 end
                 return true
             end
@@ -124,7 +129,7 @@ class Map
         if(get_not_nil_items.length<3)
             new_items(3-get_not_nil_items.length)
         end
-        send_changeitem(user.id)
+        send_change_item
     end
     
  

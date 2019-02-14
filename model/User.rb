@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 	self.primary_key = "id"
 	self.inheritance_column = '_type'
 
-	has_many: :packages, class_name: "Package", foreign_key: "package_id"
+	has_many :packages, class_name: "Package", foreign_key: "package_id"
 
 	@@user_mem = {}
 	def to_h
@@ -35,12 +35,12 @@ class User < ActiveRecord::Base
 		@@user_mem
 	end
 	def self.login(user)
-		loginoutsave(@@user_mem[id])
+		loginoutsave(user)
 		Room.out_room(user[:id])
         @@user_mem[user[:id]] = user
     end
 	def self.loginout(id)
-		loginoutsave(@@user_mem[id])
+		loginoutsave(user)
 		Room.out_room(id)
         @@user_mem.delete(id)
 	end
@@ -157,7 +157,7 @@ class User < ActiveRecord::Base
 		if new_tilizhi < tilizhi
 			tilizhi = new_tilizhi
 			Job.add( -> do
-				Room.send_data(id,{id:id,tilizhi:tilizhi}),{'name'=>'ptlz'})
+				Room.send_data(id,{id:id,tilizhi:tilizhi},{'name'=>'ptlz'})
 			end)
 		end
 	end
@@ -168,7 +168,7 @@ class User < ActiveRecord::Base
 		if new_tilizhi > tilizhi
 			tilizhi = new_tilizhi
 			Job.add( -> do
-				Room.send_data(id,{id:id,tilizhi:tilizhi}),{'name'=>'ptlz'})
+				Room.send_data(id,{id:id,tilizhi:tilizhi},{'name'=>'ptlz'})
 			end)
 		end
 	end
@@ -187,7 +187,7 @@ class User < ActiveRecord::Base
 		if new_level > level
 			level = new_level
 			Job.add( -> do
-				Room.send_data(id,{id:id,leve_up:level}),{'name'=>'plu'})
+				Room.send_data(id,{id:id,leve_up:level},{'name'=>'plu'})
 			end)
 		end
 	end

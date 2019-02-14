@@ -16,6 +16,8 @@ class Item
     end
 
     def create(pool_count,pos)
+        @owner = -1
+        @energy = -1
         Random.srand(Random.new_seed)
         @type = Random.rand(0..1)
         if @type == 1
@@ -29,7 +31,6 @@ class Item
         Random.srand(Random.new_seed)
         c = Random.rand(0...pool_count)
         @pos = pos[c]
-        @owner = nil
     end
 
     def eat(user_id)
@@ -73,7 +74,7 @@ class Item
         if(is_food?)
             {type: @type,id: @id,pos: @pos,owner:@owner,energy:@energy}
         else
-            {type: @type,id: @id,pos: @pos}
+            {type: @type,id: @id,pos: @pos,owner:-1,energy:-1}
         end
     end
 end

@@ -140,7 +140,7 @@ class Room
         user.add_item(item) if item.is_garbage?
     end
 
-    def self.items(user_id,pos)
+    def self.item_list(user_id)
         Room.get_map(user_id).get_items
     end
 
