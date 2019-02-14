@@ -27,6 +27,7 @@ class User < ActiveRecord::Base
 			zhanyang:zhanyang,
 			tilizhi: tilizhi,
 			buliang:buliang,
+			food_id: @food_id,
 			room_pos:room_pos
 		}
 	end
@@ -143,7 +144,11 @@ class User < ActiveRecord::Base
 
 		step = 0.001*(phy_str_rate+id+1)*100
 		add_tilizhi(step)
-		
+		@food_id = id
+	end
+
+	def cancel_eat
+		@food_id = nil
 	end
 
 	def cut_tilizhi(step)

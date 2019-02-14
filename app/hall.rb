@@ -62,7 +62,6 @@ Net::Connector.registerlogic('flush_room',-> params,my_node do
         my_node.send({
             status: 0,
             other_user: Room.get_other_info(params[:user_id]),
-            talk_list: Room.talk_list(params[:user_id]),
             item_list: Room.items(params[:user_id])
         },params)
     rescue Exception => e

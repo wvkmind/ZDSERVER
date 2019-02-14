@@ -141,7 +141,7 @@ class Room
     end
 
     def self.items(user_id,pos)
-        Room.get_map(user_id).items
+        Room.get_map(user_id).get_items
     end
 
     def self.talk(user_id,message)
@@ -160,6 +160,6 @@ class Room
     def self.cancel_eat(user_id,pos)
         user = User.get_user(user_id)
         map = Map.maps[user.map_id]
-        map.cancel_eat(pos)
+        map.cancel_eat(user,pos)
     end
 end

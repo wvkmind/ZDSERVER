@@ -67,17 +67,30 @@ class Map
         end
     end
 
-    def pick_items(pos)
+    def pick_items(user,pos)
         if(DataBase._redis_.srem(@MapItemPos,pos).to_i==1)
             item = @items[pos]
             @items[pos] = nil
-            Job.add( -> do
-                Room.send_data(user.id,{map_id: @id,pos:pos}),{'name'=>'removeitem'})
-            end)
+            send_change_item(user.id)
             return item
         else
             return nil
         end
+    end
+
+    def send_data(data,params)
+        users.each do |map_user_id|
+            map_user = User.get_user(map_user_id)
+            params[:ip] = map_user.ip_port[:ip]
+            params[:port] = map_user.ip_port[:port]
+            map_user.node.send(data,params)
+        end
+    end
+
+    def send_change_item(user_id)
+        Job.add( -> do
+            send_data({item_list:get_items},{'name'=>'change_item'})
+        end)
     end
 
     def eat(user,pos)
@@ -88,9 +101,7 @@ class Map
                 user.eat(item.id)
                 if item.energy == 0
                     @items[pos] = nil
-                    Job.add( -> do
-                        Room.send_data(user.id,{map_id: @id,pos:pos}),{'name'=>'removeitem'})
-                    end)
+                    send_change_item(user.id)
                 end
                 return true
             end
@@ -98,10 +109,13 @@ class Map
         return false
     end
 
-    def cancel_eat(pos)
+    def cancel_eat(user,pos)
         item = @items[pos]
         unless item.nil?
-            item.cancel_eat if item.is_food?
+            if item.is_food?
+                item.cancel_eat 
+                user.cancel_eat
+            end
         end
     end
     
@@ -110,6 +124,7 @@ class Map
         if(get_not_nil_items.length<3)
             new_items(3-get_not_nil_items.length)
         end
+        send_changeitem(user.id)
     end
     
  
