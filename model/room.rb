@@ -27,9 +27,11 @@ class Room
         user = User.get_user(sender_user_id)
         Map.maps[user.map_id].users.each do |map_user_id|
             map_user = User.get_user(map_user_id)
-            params[:ip] = map_user.ip_port[:ip]
-            params[:port] = map_user.ip_port[:port]
-            map_user.node.send(data,params)
+            unless map_user.ip_port.nil?
+                params[:ip] = map_user.ip_port[:ip]
+                params[:port] = map_user.ip_port[:port]
+                map_user.node.send(data,params)
+            end
         end if Map.maps[user.map_id]
     end
 
