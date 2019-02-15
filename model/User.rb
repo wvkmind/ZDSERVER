@@ -40,7 +40,7 @@ class User < ActiveRecord::Base
         @@user_mem[user[:id]] = user
     end
 	def self.loginout(id)
-		loginoutsave(user)
+		loginoutsave(@@user_mem[id])
 		Room.out_room(id)
         @@user_mem.delete(id)
 	end
