@@ -144,15 +144,21 @@ class Room
     end
 
     def self.item_list(user_id)
-        Room.get_map(user_id).get_items
+        user = User.get_user(user_id)
+        map = Map.maps[user.map_id]
+        map.get_items if map
     end
 
     def self.talk(user_id,message)
-        Room.get_map(user_id).talk(message)
+        user = User.get_user(user_id)
+        map = Map.maps[user.map_id]
+        map.talk(message) if map
     end
 
     def self.talk_list(user_id)
-        Room.get_map(user_id).talk_list
+        user = User.get_user(user_id)
+        map = Map.maps[user.map_id]
+        map.talk_list if map
     end
 
     def self.eat(user_id,pos)
