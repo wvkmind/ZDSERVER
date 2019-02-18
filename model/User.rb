@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 	self.primary_key = "id"
 	self.inheritance_column = '_type'
 
-	has_many :packages, class_name: "Package", foreign_key: "package_id"
+	has_many :packages, class_name: "Package"
 
 	@@user_mem = {}
 	def to_h
