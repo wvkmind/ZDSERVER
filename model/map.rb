@@ -75,7 +75,7 @@ class Map
     end
 
     def pick_items(pos)
-        if(DataBase._redis_.srem(@MapItemPos,pos).to_i==1)
+        if(DataBase._redis_.srem(@MapItemPos,pos))
             item = @items[pos]
             @items[pos] = nil
             send_change_item
