@@ -10,8 +10,8 @@ end)
 
 Net::Connector.registerlogic('pick',-> params,my_node do
     begin
-        Room.pick_items(params[:user_id],params['pos'].to_i)
-        Room.send_data(user_id,{items:map.get_items,user_id: params[:user_id],pick_pos:params['pos'].to_i},params) 
+        item = Room.pick_items(params[:user_id],params['pos'].to_i)
+        Room.send_data(user_id,{items:map.get_items,user_id: params[:user_id],pick_pos:params['pos'].to_i,id:item.get_id},params) 
     rescue Exception => e
         my_node.send({status: 1,error:e.message},params)
     end

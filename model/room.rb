@@ -140,6 +140,7 @@ class Room
         item = map.pick_items(pos)
         raise "PickFalse" if item.nil?
         user.add_item(item) if item.is_garbage?
+        item
     end
 
     def self.item_list(user_id)
