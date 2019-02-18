@@ -66,7 +66,6 @@ module Net
 		end
 
 		def fire(data)
-			puts data['name']
 			@@events[@node_type][data['name']].each do |p|
 				p.call(data,self)
 			end
