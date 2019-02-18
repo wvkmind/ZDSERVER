@@ -74,7 +74,7 @@ class Map
         ret
     end
 
-    def pick_items(user,pos)
+    def pick_items(pos)
         if(DataBase._redis_.srem(@MapItemPos,pos).to_i==1)
             item = @items[pos]
             @items[pos] = nil

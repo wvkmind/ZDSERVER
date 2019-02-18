@@ -11,8 +11,9 @@ end)
 Net::Connector.registerlogic('pick',-> params,my_node do
     begin
         item = Room.pick_items(params[:user_id],params['pos'].to_i)
-        Room.send_data(user_id,{items:map.get_items,user_id: params[:user_id],pick_pos:params['pos'].to_i,id:item.get_id},params) 
+        Room.send_data(user_id,{status:0,items:map.get_items,user_id: params[:user_id],pick_pos:params['pos'].to_i,id:item.get_id},params) 
     rescue Exception => e
+        Log.re(e)
         my_node.send({status: 1,error:e.message},params)
     end
 end)
@@ -20,11 +21,12 @@ end)
 Net::Connector.registerlogic('eat',-> params,my_node do
     begin
         if Room.eat(params[:user_id],params[:pos].to_i)
-            Room.send_data(user_id,{eat_pos:params[:pos].to_i,items:map.get_items,user_id: params[:user_id]},params)
+            Room.send_data(user_id,{status:0,eat_pos:params[:pos].to_i,items:map.get_items,user_id: params[:user_id]},params)
         else
             my_node.send({status: 1},params)
         end
     rescue Exception => e
+        Log.re(e)
         my_node.send({status: 1,error:e.message},params)
     end
 end)
