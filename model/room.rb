@@ -106,7 +106,7 @@ class Room
         user = User.get_user(user_id)
         Map.maps[user.map_id].users.each do |map_user_id|
             ret << User.get_user(map_user_id).to_client if map_user_id!=user_id
-        end
+        end if Map.maps[user.map_id]
         ret
     end
 

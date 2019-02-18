@@ -38,7 +38,7 @@ Net::Connector.registergate('login',-> params,gete do
         Session.login(session,user[:id])
         node = gete.insert_available_node(user[:id])
         if node != nil
-            node.init_heartbeat(user[:id],params[:ip],params[:port])
+            raise Exception.new('登录失败') unless (node.init_heartbeat(user[:id],params[:ip],params[:port]))
             session[:token] = Base64.encode64("#{session[:account]}:#{session[:token]}").gsub("\n", '').strip
             Room.out_room(user[:id])
             gete.send(
