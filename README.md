@@ -13,7 +13,7 @@ ServerConfig::NODE_TYPE #服务器node类型
 Net::Connector.registerlogic('ping',-> params,my_node do
     begin
         if(!my_node.flush_heartbeat(params[:user_id]))
-            raise Exception.new('You are out.')
+            raise ServerException.new('You are out.')
         else
             my_node.send({status: 0},params)
         end

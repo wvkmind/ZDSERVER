@@ -3,7 +3,13 @@ module Log
 	@@infos = Queue.new
 	def self.info(info)
 		@@infos << info
-  	end
+	end
+	def self.controller(params,e)
+		self.re("controller____________________________________")
+		self.re("params#{params}")
+		self.re("error#{e}")
+		self.re("______________________________________________")
+	end
   	def self.re(info)
 		if info.class == 'String'
 			info(info)

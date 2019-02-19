@@ -72,12 +72,12 @@ class Room
             @map_index[map] = @maps.length
             @maps << Map.create(map,@id)
         end
-        raise Exception.new('Create map error.') if @maps.length == 0
+        raise ServerException.new('Create map error.') if @maps.length == 0
     end
  
     def join(password,user_id,map_name)
-        raise Exception.new('Password error.') if @password && ( @password != password )
-        raise Exception.new('The room is full.') if users_length >= DataConfig::ROOMUSERLIMIT
+        raise ServerException.new('Password error.') if @password && ( @password != password )
+        raise ServerException.new('The room is full.') if users_length >= DataConfig::ROOMUSERLIMIT
         DataBase._redis_.sadd("RoomUserList_#{@id}",user_id)
         if map_name.nil?
             @maps[0].join(user_id)

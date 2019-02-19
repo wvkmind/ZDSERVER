@@ -67,7 +67,14 @@ module Net
 
 		def fire(data)
 			@@events[@node_type][data['name']].each do |p|
-				p.call(data,self)
+				begin
+					p.call(data,self)
+				rescue ServerException => e
+					self.send({status: 1,error:e.message},data)
+				rescue Exception => e
+					Log.controller(data,e)
+					self.send({status: 1,error:"服务器发生错误"},data)
+				end
 			end
 		end
 
