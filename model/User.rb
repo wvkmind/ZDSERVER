@@ -140,10 +140,10 @@ class User < ActiveRecord::Base
 	end
 
 	def eat(id)
-		step = 0.001*(exp_rate+1)*DataConfig::LEVEL_EXP[level]
+		step = 0.001*(self.exp_rate+1)*DataConfig::LEVEL_EXP[self.level]
 		add_exp(step)
 
-		step = 0.001*(phy_str_rate+id+1)*100
+		step = 0.001*(self.phy_str_rate+self.id+1)*100
 		add_tilizhi(step)
 		@food_id = id
 	end
@@ -153,28 +153,28 @@ class User < ActiveRecord::Base
 	end
 
 	def add_tilizhi(step)
-		new_tilizhi = tilizhi + step
+		new_tilizhi = self.tilizhi + step
 		new_tilizhi = 100 if new_tilizhi > 100
-		if new_tilizhi > tilizhi
-			tilizhi = new_tilizhi
+		if new_tilizhi > self.tilizhi
+			self.tilizhi = new_tilizhi
 		end
 	end
 
 	def pick_exp
-		step = 0.001*(exp_rate+1)*DataConfig::LEVEL_EXP[level]
+		step = 0.001*(self.exp_rate+1)*DataConfig::LEVEL_EXP[self.level]
 		add_exp(step)
 	end
 
 	def add_exp(step)
-		exp = exp + step
+		self.exp = self.exp + step
 		new_level = level
 		(DataConfig::LEVEL_EXP[level]..DataConfig::LEVEL_EXP.length-1).each_with_index do |limit,i|
-			new_level = i  if exp >= limit
+			new_level = i  if self.exp >= limit
 		end
 		if new_level > level
-			level = new_level
+			self.level = new_level
 			Job.add( -> do
-				Room.send_data(id,{id:id,leve_up:level},{'name'=>'plu'})
+				Room.send_data(self.id,{id:self.id,leve_up:self.level},{'name'=>'plu'})
 			end)
 		end
 	end
