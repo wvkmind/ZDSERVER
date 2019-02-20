@@ -2,9 +2,9 @@
 #位置改变
 Net::Connector.registerlogic('cp',-> params,my_node do
     user = User.get_user(params[:user_id])
+    user.tilizhi = params['tl']
     user.set_room_pos(params['cp_data'])
-    user.cut_tilizhi(10)
-    Room.send_data(params[:user_id],{cp_data:params['cp_data']}.merge({id: params[:user_id]}),params)
+    Room.send_data(params[:user_id],{cp_data:params['cp_data'],tl:params['tl']}.merge({id: params[:user_id]}),params)
 end)
 
 #表情
