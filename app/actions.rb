@@ -23,5 +23,5 @@ end)
 #增加体力值
 Net::Connector.registerlogic('atlz',-> params,my_node do
     user = User.get_user(params[:user_id])
-    user.add_tilizhi(params[:n])
+    user.add_tilizhi(params['n'])
 end)

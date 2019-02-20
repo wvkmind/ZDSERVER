@@ -7,7 +7,7 @@ module Log
 	def self.controller(params,e)
 		self.re("controller____________________________________")
 		self.re("params#{params.to_s}")
-		self.re("error#{e}")
+		self.re(e)
 		self.re("______________________________________________")
 	end
   	def self.re(info)
