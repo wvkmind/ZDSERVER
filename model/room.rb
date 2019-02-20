@@ -139,7 +139,10 @@ class Room
         map = Map.maps[user.map_id]
         item = map.pick_items(pos)
         raise "PickFalse" if item.nil?
-        user.add_item(item) if item.is_garbage?
+        if item.is_garbage?
+            user.add_item(item) 
+            user.pick_exp
+        end
         item
     end
 

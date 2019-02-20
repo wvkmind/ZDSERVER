@@ -3,6 +3,7 @@
 Net::Connector.registerlogic('cp',-> params,my_node do
     user = User.get_user(params[:user_id])
     user.set_room_pos(params['cp_data'])
+    user.cut_tilizhi(10)
     Room.send_data(params[:user_id],{cp_data:params['cp_data']}.merge({id: params[:user_id]}),params)
 end)
 
@@ -17,4 +18,10 @@ Net::Connector.registerlogic('exp',-> params,my_node do
     a[4] = params['ac_data'][1]
     user.set_room_pos(a)
     Room.send_data(params[:user_id],{ac_data:params['ac_data']}.merge({id: params[:user_id]}),params)
+end)
+
+#增加体力值
+Net::Connector.registerlogic('atlz',-> params,my_node do
+    user = User.get_user(params[:user_id])
+    user.add_tilizhi(params[:n])
 end)
