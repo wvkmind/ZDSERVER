@@ -157,6 +157,7 @@ class User < ActiveRecord::Base
 		if new_tilizhi > self.tilizhi
 			self.tilizhi = new_tilizhi
 		end
+		self.save
 	end
 
 	def pick_exp
@@ -176,6 +177,7 @@ class User < ActiveRecord::Base
 				Room.send_data(self.id,{id:self.id,leve_up:self.level},{'name'=>'plu'})
 			end)
 		end
+		self.save
 	end
 
 end
