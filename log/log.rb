@@ -11,7 +11,7 @@ module Log
 		self.re("______________________________________________")
 	end
   	def self.re(info)
-		if info.class == 'String'
+		if info.class == String
 			info(info)
 		else
 			@@infos << info.message
