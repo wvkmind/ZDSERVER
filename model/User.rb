@@ -152,25 +152,11 @@ class User < ActiveRecord::Base
 		@food_id = nil
 	end
 
-	def cut_tilizhi(step)
-		new_tilizhi = tilizhi - step
-		new_tilizhi = 0 if new_tilizhi < 0
-		if new_tilizhi < tilizhi
-			tilizhi = new_tilizhi
-			Job.add( -> do
-				Room.send_data(id,{id:id,tilizhi:tilizhi},{'name'=>'ptlz'})
-			end)
-		end
-	end
-
 	def add_tilizhi(step)
 		new_tilizhi = tilizhi + step
 		new_tilizhi = 100 if new_tilizhi > 100
 		if new_tilizhi > tilizhi
 			tilizhi = new_tilizhi
-			Job.add( -> do
-				Room.send_data(id,{id:id,tilizhi:tilizhi},{'name'=>'ptlz'})
-			end)
 		end
 	end
 
