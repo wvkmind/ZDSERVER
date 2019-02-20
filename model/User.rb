@@ -152,8 +152,7 @@ class User < ActiveRecord::Base
 		@food_id = nil
 	end
 
-	def add_tilizhi(step)
-		new_tilizhi = self.tilizhi + step
+	def add_tilizhi(new_tilizhi)
 		new_tilizhi = 100 if new_tilizhi > 100
 		if new_tilizhi > self.tilizhi
 			self.tilizhi = new_tilizhi
