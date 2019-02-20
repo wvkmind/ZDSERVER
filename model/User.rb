@@ -28,6 +28,7 @@ class User < ActiveRecord::Base
 			tilizhi: tilizhi,
 			buliang:buliang,
 			food_id: @food_id,
+			exp: exp,
 			room_pos:room_pos
 		}
 	end
