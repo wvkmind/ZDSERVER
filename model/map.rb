@@ -112,10 +112,10 @@ class Map
                     @items[pos] = nil
                     send_change_item
                 end
-                return true
+                return item
             end
         end
-        return false
+        return nil
     end
 
     def cancel_eat(user,pos)

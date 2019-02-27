@@ -11,7 +11,8 @@ Net::Connector.registerlogic('pick',-> params,my_node do
 end)
 
 Net::Connector.registerlogic('eat',-> params,my_node do
-    if Room.eat(params[:user_id],params['pos'].to_i)
+    item = Room.eat(params[:user_id],params['pos'].to_i)
+    unless item.nil?
         item_list = Room.item_list(params[:user_id])
         Room.send_data(params[:user_id],{status:0,eat_pos:params['pos'].to_i,items:item_list,user_id: params[:user_id],id:item.get_id,type: item.type},params)
     else
