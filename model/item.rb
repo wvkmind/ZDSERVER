@@ -70,6 +70,10 @@ class Item
         @type
     end
     
+    def owner
+        @owner
+    end
+
     def to_client
         if(is_food?)
             {type: @type,id: @id,pos: @pos,owner:@owner,energy:@energy}
