@@ -76,7 +76,7 @@ class Item
 
     def to_client
         if(is_food?)
-            {type: @type,id: @id,pos: @pos,owner:@owner,energy:@energy}
+            {type: @type,id: @id,pos: @pos,owner:@owner,energy:@energy/DataConfig::FOODENERGY[@id]}
         else
             {type: @type,id: @id,pos: @pos,owner:-1,energy:-1}
         end
