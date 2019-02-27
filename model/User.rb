@@ -144,7 +144,7 @@ class User < ActiveRecord::Base
 		add_exp(step)
 
 		step = 0.001*(self.phy_str_rate*id+1)*100
-		if(step<1)step = 1
+		step = 1 if(step<1)
 		add_tilizhi(step)
 		@food_id = id
 	end
