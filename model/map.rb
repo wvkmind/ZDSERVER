@@ -107,7 +107,7 @@ class Map
         unless item.nil?
             if item.is_food? and item.energy!=0 and item.owner == -1
                 item.eat(user.id)
-                user.eat(item.id)
+                user.eat(item.get_id)
                 if item.energy == 0
                     @items[pos] = nil
                     send_change_item
