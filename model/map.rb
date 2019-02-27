@@ -105,7 +105,7 @@ class Map
     def eat(user,pos)
         item = @items[pos]
         unless item.nil?
-            if item.is_food? and item.energy!=0 and item.owner == nil
+            if item.is_food? and item.energy!=0 and item.owner == -1
                 item.eat(user.id)
                 user.eat(item.id)
                 if item.energy == 0

@@ -43,7 +43,7 @@ class Item
     end
 
     def cancel_eat
-        @owner = nil
+        @owner = -1
     end
 
     def energy
