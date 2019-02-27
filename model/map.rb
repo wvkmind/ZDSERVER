@@ -106,7 +106,7 @@ class Map
         item = @items[pos]
         unless item.nil?
             if item.is_food? and item.energy!=0 and item.owner == nil
-                item.eat
+                item.eat(user.id)
                 user.eat(item.id)
                 if item.energy == 0
                     @items[pos] = nil
