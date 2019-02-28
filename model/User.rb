@@ -38,6 +38,14 @@ class User < ActiveRecord::Base
 	def self.login(user)
 		loginoutsave(user)
 		Room.out_room(user[:id])
+		new_level = user.level
+		(DataConfig::LEVEL_EXP[user.level]..DataConfig::LEVEL_EXP.length-1).each_with_index do |limit,i|
+			new_level = i  if self.exp >= limit
+		end
+		if new_level!=user.level
+			user.level = new_level
+			user.save
+		end
         @@user_mem[user[:id]] = user
     end
 	def self.loginout(id)
