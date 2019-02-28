@@ -35,7 +35,7 @@ class Item
 
     def eat(user_id)
         @owner = user_id
-        if(@energy>1)
+        if(@energy>=1)
             @energy = @energy - 1
         end
         cancel_eat if(@energy==0)
