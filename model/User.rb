@@ -142,10 +142,6 @@ class User < ActiveRecord::Base
 	def eat(id)
 		step = 0.001*(self.exp_rate+1)*DataConfig::LEVEL_EXP[self.level]
 		add_exp(step)
-
-		step = (self.phy_str_rate+1)*id
-		step = 1 if(step<1)
-		add_tilizhi(step)
 		@food_id = id
 	end
 
