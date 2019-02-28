@@ -38,15 +38,6 @@ class User < ActiveRecord::Base
 	def self.login(user)
 		loginoutsave(user)
 		Room.out_room(user[:id])
-		new_level = user.level
-		(DataConfig::LEVEL_EXP[user.level]..DataConfig::LEVEL_EXP.length-1).each_with_index do |limit,i|
-			new_level = i  if user.exp >= limit
-			Log.re(new_level.to_s)
-		end
-		if new_level!=user.level
-			user.level = new_level
-			user.save
-		end
         @@user_mem[user[:id]] = user
     end
 	def self.loginout(id)
@@ -176,8 +167,8 @@ class User < ActiveRecord::Base
 		self.exp = self.exp + step 
 		@node.send({status: 0,exp:self.exp},{'name'=>'ce'}.merge(ip_port)) 
 		new_level = level
-		(DataConfig::LEVEL_EXP[level]..DataConfig::LEVEL_EXP.length-1).each_with_index do |limit,i|
-			new_level = i  if self.exp >= limit
+		(user.level..DataConfig::LEVEL_EXP.length).each do |i|
+			new_level = i  if user.exp >= DataConfig::LEVEL_EXP[i]
 		end
 		if new_level > level
 			self.level = new_level
