@@ -167,8 +167,8 @@ class User < ActiveRecord::Base
 		self.exp = self.exp + step 
 		@node.send({status: 0,exp:self.exp},{'name'=>'ce'}.merge(ip_port)) 
 		new_level = level
-		(user.level..DataConfig::LEVEL_EXP.length).each do |i|
-			new_level = i  if user.exp >= DataConfig::LEVEL_EXP[i]
+		(self.level..DataConfig::LEVEL_EXP.length).each do |i|
+			new_level = i  if self.exp >= DataConfig::LEVEL_EXP[i]
 		end
 		if new_level > level
 			self.level = new_level
