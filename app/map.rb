@@ -13,7 +13,7 @@ end)
 Net::Connector.registerlogic('eat',-> params,my_node do
     item = Room.eat(params[:user_id],params['pos'].to_i)
     Log.re(params.to_s);
-    Log.re(item.to_client);
+    Log.re(item.to_client.to_s);
     unless item.nil?
         item_list = Room.item_list(params[:user_id])
         Room.send_data(params[:user_id],{status:0,eat_pos:params['pos'].to_i,items:item_list,user_id: params[:user_id],id:item.get_id,type: item.type},params)
