@@ -168,12 +168,16 @@ class User < ActiveRecord::Base
 		@node.send({status: 0,exp:self.exp},{'name'=>'ce'}.merge(ip_port)) 
 		new_level = level
 		(self.level..DataConfig::LEVEL_EXP.length-1).each do |i|
-			new_level = i  if self.exp >= DataConfig::LEVEL_EXP[i]
+			if self.exp >= DataConfig::LEVEL_EXP[i]
+				new_level = i  
+			else
+				break
+			end
 		end
 		if new_level > level
 			self.level = new_level
 			Job.add( -> do
-				Room.send_data(self.id,{id:self.id,leve_up:self.level},{'name'=>'plu'})
+				Room.send_data(self.id,{id:self.id,leve:self.level},{'name'=>'plu'})
 			end)
 		end
 		self.save
