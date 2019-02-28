@@ -40,7 +40,8 @@ class User < ActiveRecord::Base
 		Room.out_room(user[:id])
 		new_level = user.level
 		(DataConfig::LEVEL_EXP[user.level]..DataConfig::LEVEL_EXP.length-1).each_with_index do |limit,i|
-			new_level = i  if self.exp >= limit
+			new_level = i  if user.exp >= limit
+			Log.re(new_level.to_s)
 		end
 		if new_level!=user.level
 			user.level = new_level
