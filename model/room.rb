@@ -169,9 +169,9 @@ class Room
         map = Map.maps[user.map_id]
         map.eat(user,pos)
     end
-    def self.cancel_eat(user_id,pos)
+    def self.cancel_eat(user_id,pos,x,y)
         user = User.get_user(user_id)
         map = Map.maps[user.map_id]
-        map.cancel_eat(user,pos)
+        map.cancel_eat(user,pos,x,y)
     end
 end

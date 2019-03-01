@@ -18,6 +18,8 @@ class Item
     def create(pool_count,pos)
         @owner = -1
         @energy = -1
+        @x = -1
+        @y = -1
         Random.srand(Random.new_seed)
         @type = Random.rand(0..1)
         if @type == 1
@@ -38,11 +40,13 @@ class Item
         if(@energy>=1)
             @energy = @energy - 1
         end
-        cancel_eat if(@energy==0)
+        cancel_eat(-1,-1) if(@energy==0)
         @energy != 0
     end
 
-    def cancel_eat
+    def cancel_eat(x,y)
+        @x = x
+        @y = y
         @owner = -1
     end
 
@@ -76,7 +80,7 @@ class Item
 
     def to_client
         if(is_food?)
-            {type: @type,id: @id,pos: @pos,owner:@owner,energy:@energy.to_f/DataConfig::FOODENERGY[@id].to_f}
+            {type: @type,id: @id,pos: @pos,owner:@owner,energy:@energy.to_f/DataConfig::FOODENERGY[@id].to_f,x: @x,y:@y}
         else
             {type: @type,id: @id,pos: @pos,owner:-1,energy:-1}
         end

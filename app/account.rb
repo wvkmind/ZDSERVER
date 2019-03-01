@@ -55,3 +55,13 @@ Net::Connector.registergate('login',-> params,gete do
         raise ServerException.new('服务器好像满了')
     end
 end)
+
+Net::Connector.registergate('login_out',-> params,gete do
+    ret = AccountHelper::login params['account'], params['password']
+
+    session = ret[:session]
+    user = ret[:user]
+    User.loginout(user.id)
+    Session.loginout(params['account']])
+    
+end

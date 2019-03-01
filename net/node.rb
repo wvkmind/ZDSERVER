@@ -6,7 +6,7 @@ class Node < Net::Connector
     def self.create(node_id)
         node = Node.new(ServerConfig::NODE_TYPE[:logic],NetConfig::IP,0)
         node.init_node(node_id)
-        Timer.register(300,->{node.check_heartbeats})
+        Timer.register(60,->{node.check_heartbeats})
         node
     end
 
@@ -39,7 +39,7 @@ class Node < Net::Connector
 
     def init_heartbeat(user_id,ip,port)
         #if(!node_users.include?(user_id)&&!DataBase._redis_.exists("Node_#{@node_id}_H_#{user_id}"))
-            DataBase._redis_.setex("Node_#{@node_id}_H_#{user_id}",300,"live")
+            DataBase._redis_.setex("Node_#{@node_id}_H_#{user_id}",120,"live")
             @clients[user_id] = 0
             user = User.get_user(user_id)
             user.set_ip_port({ip:ip ,port:port})
@@ -52,7 +52,7 @@ class Node < Net::Connector
 
     def flush_heartbeat(user_id,ip,port)
         if(node_users.include?(user_id)&&DataBase._redis_.exists("Node_#{@node_id}_H_#{user_id}"))
-            DataBase._redis_.expire("Node_#{@node_id}_H_#{user_id}",300)
+            DataBase._redis_.expire("Node_#{@node_id}_H_#{user_id}",120)
             @clients[user_id] = 0
             user = User.get_user(user_id)
             user.set_ip_port({ip:ip ,port:port})

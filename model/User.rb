@@ -41,6 +41,10 @@ class User < ActiveRecord::Base
         @@user_mem[user[:id]] = user
     end
 	def self.loginout(id)
+		if (@item_pos!=-1)
+			Map.maps[@map_id].items[@item_pos] = nil
+			Map.maps[@map_id].send_change_item
+		end
 		loginoutsave(@@user_mem[id])
 		Room.out_room(id)
         @@user_mem.delete(id)
@@ -117,8 +121,8 @@ class User < ActiveRecord::Base
 			else
 				have_item.count = have_item.count - 1
 				if have_item.count > 0
-					return have_item.count
 					have_item.save
+					return have_item.count
 				else
 					have_item.destroy
 					return 0
@@ -183,4 +187,11 @@ class User < ActiveRecord::Base
 		self.save
 	end
 
+	def have_item(pos)
+		@item_pos = pos
+	end
+
+	def remove_item
+		@item_pos = -1
+	end
 end

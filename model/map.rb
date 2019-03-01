@@ -108,8 +108,10 @@ class Map
             if item.is_food? and item.energy!=0 
                 item.eat(user.id)
                 user.eat(item.get_id)
+                user.have_item(pos)
                 if item.energy == 0
                     @items[pos] = nil
+                    user.remove_item
                     send_change_item
                 end
                 return item
@@ -118,11 +120,11 @@ class Map
         return nil
     end
 
-    def cancel_eat(user,pos)
+    def cancel_eat(user,pos,x,y)
         item = @items[pos]
         unless item.nil?
             if item.is_food?
-                item.cancel_eat 
+                item.cancel_eat(x,y)
                 user.cancel_eat
             end
         end
@@ -188,5 +190,7 @@ class Map
         DataBase._redis_.del("MapItemPos_#{@id}")
         DataBase._redis_.del("MapTalk_#{@id}")
     end
-    
+    def items
+        @items
+    end
 end
