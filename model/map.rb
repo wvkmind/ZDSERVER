@@ -126,6 +126,7 @@ class Map
             if item.is_food?
                 item.cancel_eat(x,y)
                 user.cancel_eat
+                user.remove_item
             end
         end
     end
