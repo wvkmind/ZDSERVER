@@ -18,7 +18,7 @@ Net::Connector.registerlogic('exp',-> params,my_node do
     a[4] = params['ac_data'][1]
     
     user.set_room_pos(a)
-    Room.cancel_eat(user.id,user.item_pos,a[0],a[1])
+    Room.cancel_eat(user.id,user.item_pos,a[0],a[1]) if user.item_pos != nil
     Room.send_data(params[:user_id],{ac_data:params['ac_data']}.merge({id: params[:user_id]}),params)
 
 end)
