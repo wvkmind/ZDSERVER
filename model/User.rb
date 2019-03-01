@@ -177,7 +177,7 @@ class User < ActiveRecord::Base
 		if new_level > level
 			self.level = new_level
 			Job.add( -> do
-				Room.send_data(self.id,{id:self.id,leve:self.level},{'name'=>'plu'})
+				Room.send_data(self.id,{id:self.id,level:self.level},{'name'=>'plu'})
 			end)
 		end
 		self.save
