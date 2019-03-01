@@ -82,7 +82,7 @@ class Item
         if(is_food?)
             {type: @type,id: @id,pos: @pos,owner:@owner,energy:@energy.to_f/DataConfig::FOODENERGY[@id].to_f,x: @x,y:@y}
         else
-            {type: @type,id: @id,pos: @pos,owner:-1,energy:-1}
+            {type: @type,id: @id,pos: @pos,owner:-1,energy:-1,x: @x,y:@y}
         end
     end
 end
