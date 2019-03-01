@@ -16,7 +16,13 @@ Net::Connector.registerlogic('eat',-> params,my_node do
     Log.re(item.to_client.to_s);
     unless item.nil?
         item_list = Room.item_list(params[:user_id])
-        Room.send_data(params[:user_id],{status:0,eat_pos:params['pos'].to_i,items:item_list,user_id: params[:user_id],id:item.get_id,type: item.type},params)
+        status = 0
+        if item.energy <= 0
+            status = 2
+        else
+            status = 0
+        end
+        Room.send_data(params[:user_id],{status:status,eat_pos:params['pos'].to_i,items:item_list,user_id: params[:user_id],id:item.get_id,type: item.type},params)
     else
         my_node.send({status: 1},params)
     end
