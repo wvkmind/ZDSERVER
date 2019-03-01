@@ -58,10 +58,9 @@ end)
 
 Net::Connector.registergate('login_out',-> params,gete do
     ret = AccountHelper::login params['account'], params['password']
-
     session = ret[:session]
     user = ret[:user]
     User.loginout(user.id)
     Session.loginout(params['account'])
 
-end
+end)
