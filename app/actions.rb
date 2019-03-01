@@ -16,8 +16,11 @@ Net::Connector.registerlogic('exp',-> params,my_node do
     a[2] = params['ac_data'][2]
     a[3] = params['ac_data'][0]
     a[4] = params['ac_data'][1]
+    
     user.set_room_pos(a)
+    Room.cancel_eat(user.id,user.item_pos,a[0],a[1])
     Room.send_data(params[:user_id],{ac_data:params['ac_data']}.merge({id: params[:user_id]}),params)
+
 end)
 
 #增加体力值

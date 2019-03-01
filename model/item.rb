@@ -18,8 +18,8 @@ class Item
     def create(pool_count,pos)
         @owner = -1
         @energy = -1
-        @x = -1
-        @y = -1
+        @x = -10000
+        @y = -10000
         Random.srand(Random.new_seed)
         @type = Random.rand(0..1)
         if @type == 1

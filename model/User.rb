@@ -198,4 +198,8 @@ class User < ActiveRecord::Base
 	def remove_item
 		@item_pos = -1
 	end
+
+	def item_pos
+		@item_pos
+	end
 end
