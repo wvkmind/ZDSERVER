@@ -41,13 +41,17 @@ class User < ActiveRecord::Base
         @@user_mem[user[:id]] = user
     end
 	def self.loginout(id)
-		if (@item_pos!=-1)
-			Map.maps[@map_id].items[@item_pos] = nil
-			Map.maps[@map_id].send_change_item
+		begin
+			if (@item_pos!=-1)
+				Map.maps[@map_id].items[@item_pos] = nil
+				Map.maps[@map_id].send_change_item
+			end
+		rescue Exception => e
+			Log.re(e)
 		end
 		loginoutsave(@@user_mem[id])
 		Room.out_room(id)
-        @@user_mem.delete(id)
+		@@user_mem.delete(id)
 	end
 	def self.loginoutsave(user)
 		user.save unless user.nil?
