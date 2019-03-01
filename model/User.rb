@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
     end
 	def self.loginout(id)
 		begin
-			if (@item_pos!=-1)
+			if @map_id&&(@item_pos!=-1)
 				Map.maps[@map_id].items[@item_pos] = nil
 				Map.maps[@map_id].send_change_item
 			end
