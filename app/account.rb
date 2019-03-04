@@ -14,10 +14,10 @@ Net::Connector.registergate('register',-> params,gete do
             raise ServerException.new('没有选人呀') if params['type'].nil?
             user[:name]=params['user_name'].to_s
             user[:type]=params['type'].to_i
-            user[:tra_rate]=params['tra_rate'].to_i
-            user[:phy_str_rate]=params['phy_str_rate'].to_i
-            user[:exp_rate]=params['exp_rate'].to_i
-            raise ServerException.new("你想干啥") if user[:tra_rate] + user[:phy_str_rate] + user[:exp_rate] > 5
+            user[:tra_rate]=params['tra_rate'].to_f
+            user[:phy_str_rate]=params['phy_str_rate'].to_f
+            user[:exp_rate]=params['exp_rate'].to_f
+            raise ServerException.new("你想干啥") if user[:tra_rate] + user[:phy_str_rate] + user[:exp_rate] > 19
             user[:level]=1
             user[:zhanyang]=0
             user[:buliang]=0
